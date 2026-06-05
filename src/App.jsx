@@ -42,6 +42,8 @@ function App() {
     missing: 0,
   });
 
+  const [ranking, setRanking] = useState([]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (!currentUser) {
@@ -86,13 +88,19 @@ function App() {
 
       const allPredictions = await getAllPredictions();
 
-      const ranking = buildRanking(approvedUsers, allPredictions, matchesArray);
+      const rankingData = buildRanking(
+        approvedUsers,
+        allPredictions,
+        matchesArray,
+      );
+
+      setRanking(rankingData);
 
       const stats = buildDashboardStats(
         user.uid,
         userPredictions,
         matchesArray,
-        ranking,
+        rankingData,
       );
 
       setDashboardStats(stats);
@@ -102,6 +110,14 @@ function App() {
 
     loadData();
   }, [user, userStatus]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const stats = buildDashboardStats(user.uid, predictions, matches, ranking);
+
+    setDashboardStats(stats);
+  }, [predictions, matches, ranking, user]);
 
   const loginGoogle = async () => {
     try {
@@ -188,6 +204,7 @@ function App() {
           </div>
         </div>
       </header>
+
       <UpcomingMatchesCarousel matches={matches} />
 
       <section className="tabs-section">
@@ -240,7 +257,9 @@ function App() {
       <main className="content-section">
         <Routes>
           <Route path="/" element={<Navigate to="/rules" />} />
+
           <Route path="/rules" element={<RulesPage />} />
+
           <Route
             path="/matches"
             element={<MatchesPage matches={matches} loading={loading} />}
