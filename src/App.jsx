@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, NavLink } from "react-router-dom";
 import { auth, provider } from "./firebase";
 import "./App.css";
 
@@ -41,7 +41,6 @@ function App() {
     failed: 0,
     missing: 0,
   });
-  const carouselRef = useRef(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -103,52 +102,6 @@ function App() {
 
     loadData();
   }, [user, userStatus]);
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-
-    if (!carousel) {
-      return;
-    }
-
-    let interval;
-
-    const startAutoScroll = () => {
-      interval = setInterval(() => {
-        if (
-          carousel.scrollLeft + carousel.clientWidth >=
-          carousel.scrollWidth - 5
-        ) {
-          carousel.scrollTo({
-            left: 0,
-            behavior: "smooth",
-          });
-        } else {
-          carousel.scrollBy({
-            left: 1,
-            behavior: "auto",
-          });
-        }
-      }, 20);
-    };
-
-    startAutoScroll();
-
-    const stopAutoScroll = () => {
-      clearInterval(interval);
-    };
-
-    carousel.addEventListener("mouseenter", stopAutoScroll);
-    carousel.addEventListener("mouseleave", startAutoScroll);
-
-    return () => {
-      clearInterval(interval);
-
-      carousel.removeEventListener("mouseenter", stopAutoScroll);
-
-      carousel.removeEventListener("mouseleave", startAutoScroll);
-    };
-  }, [matches]);
 
   const loginGoogle = async () => {
     try {
@@ -238,25 +191,50 @@ function App() {
       <UpcomingMatchesCarousel matches={matches} />
 
       <section className="tabs-section">
-        <Link to="/rules" className="tab-link">
+        <NavLink
+          to="/rules"
+          className={({ isActive }) =>
+            isActive ? "tab-link active-tab" : "tab-link"
+          }
+        >
           Reglas
-        </Link>
+        </NavLink>
 
-        <Link to="/matches" className="tab-link">
+        <NavLink
+          to="/matches"
+          className={({ isActive }) =>
+            isActive ? "tab-link active-tab" : "tab-link"
+          }
+        >
           Partidos
-        </Link>
+        </NavLink>
 
-        <Link to="/predictions" className="tab-link">
+        <NavLink
+          to="/predictions"
+          className={({ isActive }) =>
+            isActive ? "tab-link active-tab" : "tab-link"
+          }
+        >
           Predicciones
-        </Link>
+        </NavLink>
 
-        <Link to="/results" className="tab-link">
+        <NavLink
+          to="/results"
+          className={({ isActive }) =>
+            isActive ? "tab-link active-tab" : "tab-link"
+          }
+        >
           Resultados
-        </Link>
+        </NavLink>
 
-        <Link to="/ranking" className="tab-link">
+        <NavLink
+          to="/ranking"
+          className={({ isActive }) =>
+            isActive ? "tab-link active-tab" : "tab-link"
+          }
+        >
           Clasificación
-        </Link>
+        </NavLink>
       </section>
 
       <main className="content-section">
