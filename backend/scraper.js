@@ -3,11 +3,6 @@ import { chromium } from "playwright";
 export const getWorldCupMatches = async (url) => {
   const browser = await chromium.launch({
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-    ],
   });
 
   const page = await browser.newPage();
