@@ -20,6 +20,7 @@ import PredictionsPage from "./pages/PredictionsPage";
 import ResultsPage from "./pages/ResultsPage";
 import RankingPage from "./pages/RankingPage";
 import PredictionDetailPage from "./pages/PredictionDetailPage";
+import UpcomingMatchesCarousel from "./components/UpcomingMatchesCarousel";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -234,21 +235,7 @@ function App() {
           </div>
         </div>
       </header>
-      <section className="carousel-section">
-        <h3>Próximos partidos</h3>
-
-        <div className="carousel" ref={carouselRef}>
-          {matches.slice(0, 10).map((match, index) => (
-            <div key={index} className="carousel-card">
-              <p>
-                {match.home} vs {match.away}
-              </p>
-
-              <small>{match.time}</small>
-            </div>
-          ))}
-        </div>
-      </section>
+      <UpcomingMatchesCarousel matches={matches} />
 
       <section className="tabs-section">
         <Link to="/rules" className="tab-link">

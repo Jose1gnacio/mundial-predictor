@@ -199,22 +199,17 @@ body {
   font-size: 32px;
 }
 
-.carousel {
-  display: flex;
-
-  gap: 15px;
-
-  overflow-x: auto;
-
-  padding-bottom: 10px;
-
-  scroll-behavior: smooth;
-
-  scrollbar-width: none;
+.carousel-wrapper {
+  overflow: hidden;
+  width: 100%;
 }
 
-.carousel::-webkit-scrollbar {
-  display: none;
+.carousel-track {
+  display: flex;
+  gap: 15px;
+  width: max-content;
+
+  animation: carouselMove 220s linear infinite;
 }
 
 .carousel-card {
@@ -244,6 +239,16 @@ body {
 
 .carousel-card small {
   opacity: 0.8;
+}
+
+@keyframes carouselMove {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* =========================
