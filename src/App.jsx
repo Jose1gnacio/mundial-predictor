@@ -138,7 +138,13 @@ function App() {
   if (!user) {
     return (
       <div className="login-container">
-        <h1>Mundial Predictor ⚽</h1>
+        <h1 className="login-title">
+          <span>Mundial de Predicciones</span>
+
+          <span>La Verbena</span>
+
+          <span>⚽</span>
+        </h1>
 
         <button onClick={loginGoogle}>Iniciar sesión con Google</button>
       </div>
@@ -148,7 +154,13 @@ function App() {
   if (userStatus === "pending") {
     return (
       <div className="login-container">
-        <h1>Mundial Predictor ⚽</h1>
+        <h1 className="login-title">
+          <span>Mundial de Predicciones</span>
+
+          <span>La Verbena</span>
+
+          <span>⚽</span>
+        </h1>
 
         <h2>⏳ Solicitud pendiente</h2>
 
@@ -162,7 +174,13 @@ function App() {
   if (userStatus === "rejected") {
     return (
       <div className="login-container">
-        <h1>Mundial Predictor ⚽</h1>
+        <h1 className="login-title">
+          <span>Mundial de Predicciones</span>
+
+          <span>La Verbena</span>
+
+          <span>⚽</span>
+        </h1>
 
         <h2>❌ Acceso rechazado</h2>
 

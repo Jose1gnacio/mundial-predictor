@@ -1,7 +1,7 @@
 export default function RulesPage() {
   return (
     <div className="rules-container">
-      <h2 className="rules-title">Reglas del Torneo</h2>
+      <h1 className="page-title">Reglas del Mundial</h1>
 
       <div className="rules-grid">
         <div className="rule-card">

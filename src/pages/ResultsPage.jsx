@@ -28,6 +28,7 @@ function ResultsPage({ matches, predictions, loading }) {
 
   return (
     <>
+      <h1 className="page-title">Resultados Oficiales</h1>
       {Object.entries(groupedMatches).map(([round, roundMatches]) => (
         <div key={round} className="round-section">
           <h2 className="round-title">{round}</h2>

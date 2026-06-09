@@ -12,6 +12,7 @@ function MatchesPage({ matches, loading }) {
 
   return (
     <>
+      <h1 className="page-title">Calendario de Partidos</h1>
       {Object.entries(
         matches.reduce((acc, match) => {
           if (!acc[match.round]) {

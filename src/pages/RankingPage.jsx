@@ -61,7 +61,7 @@ function RankingPage({ matches }) {
 
   return (
     <div className="ranking-container">
-      <h2 className="ranking-title">Tabla de Clasificación</h2>
+      <h1 className="page-title">Tabla de Clasificación</h1>
 
       <div className="ranking-card">
         <div className="ranking-header">

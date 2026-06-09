@@ -21,6 +21,7 @@ export default function PredictionsPage({ matches, predictions, loading }) {
 
   return (
     <>
+      <h1 className="page-title">Mis Predicciones</h1>
       {Object.entries(
         matches.reduce((acc, match) => {
           if (!acc[match.round]) {

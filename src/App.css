@@ -50,6 +50,81 @@ body {
   font-size: 16px;
 }
 
+.login-title {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 8px;
+
+  text-align: center;
+
+  color: white;
+}
+
+.login-title span:first-child {
+  font-size: 3rem;
+
+  font-weight: bold;
+}
+
+.login-title span:nth-child(2) {
+  font-size: 2.4rem;
+
+  font-weight: bold;
+}
+
+.login-title span:last-child {
+  font-size: 3rem;
+}
+
+.login-title {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 8px;
+
+  text-align: center;
+
+  color: white;
+}
+
+.login-title span:first-child {
+  font-size: 3rem;
+
+  font-weight: bold;
+}
+
+.login-title span:nth-child(2) {
+  font-size: 2.4rem;
+
+  font-weight: bold;
+}
+
+.login-title span:last-child {
+  font-size: 3rem;
+}
+
+@media (max-width: 768px) {
+  .login-title span:first-child {
+    font-size: 2rem;
+  }
+
+  .login-title span:nth-child(2) {
+    font-size: 1.8rem;
+  }
+
+  .login-title span:last-child {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+}
+
 /* =========================
    APP
 ========================= */
@@ -105,6 +180,7 @@ body {
 .dashboard-user h2 {
   font-size: 52px;
   font-weight: bold;
+  color: white;
 }
 
 .dashboard-content {
@@ -285,6 +361,23 @@ body {
 }
 
 /* =========================
+   PAGE TITLES
+========================= */
+
+.page-title {
+  text-align: center;
+  color: white;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+}
+
+/* =========================
    JORNADAS
 ========================= */
 
@@ -296,6 +389,7 @@ body {
   text-align: center;
   font-size: 42px;
   margin-bottom: 25px;
+  color: white;
 }
 
 /* =========================
@@ -914,6 +1008,8 @@ body {
 .rules-title {
   text-align: center;
   margin-bottom: 25px;
+  color: white;
+  
 }
 
 .rules-grid {
