@@ -106,18 +106,22 @@ app.post("/predictions", async (req, res) => {
 
     limitDate.setHours(23, 59, 59, 999);
 
-    const now = new Date();
+    const nowChile = new Date(
+      new Date().toLocaleString("en-US", {
+        timeZone: "America/Santiago",
+      }),
+    );
 
     // 🔍 LOGS TEMPORALES
     console.log("=================================");
     console.log("Partido:", match.home, "vs", match.away);
     console.log("matchDate:", match.matchDate);
     console.log("limitDate:", limitDate.toString());
-    console.log("now:", now.toString());
-    console.log("now > limitDate ?", now > limitDate);
+    console.log("nowChile:", nowChile.toString());
+    console.log("nowChile > limitDate ?", nowChile > limitDate);
     console.log("=================================");
 
-    if (now > limitDate) {
+    if (nowChile > limitDate) {
       return res.status(403).json({
         success: false,
         error: "El plazo para realizar esta predicción ya expiró",
