@@ -96,6 +96,18 @@ function App() {
 
       setRanking(rankingData);
 
+      console.log("UID usuario logueado:", user.uid);
+
+      console.log(
+        "Usuario encontrado en ranking:",
+        rankingData.find((u) => u.uid === user.uid),
+      );
+
+      console.log(
+        "Posición calculada:",
+        rankingData.findIndex((u) => u.uid === user.uid) + 1,
+      );
+
       const stats = buildDashboardStats(
         user.uid,
         userPredictions,
@@ -199,6 +211,7 @@ function App() {
             <img src={user.photoURL} alt="usuario" className="user-photo" />
 
             <h2>{user.displayName}</h2>
+            <p>{user.uid}</p>
           </div>
 
           <div className="dashboard-content">

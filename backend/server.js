@@ -108,6 +108,15 @@ app.post("/predictions", async (req, res) => {
 
     const now = new Date();
 
+    // 🔍 LOGS TEMPORALES
+    console.log("=================================");
+    console.log("Partido:", match.home, "vs", match.away);
+    console.log("matchDate:", match.matchDate);
+    console.log("limitDate:", limitDate.toString());
+    console.log("now:", now.toString());
+    console.log("now > limitDate ?", now > limitDate);
+    console.log("=================================");
+
     if (now > limitDate) {
       return res.status(403).json({
         success: false,
