@@ -112,14 +112,14 @@ app.post("/predictions", async (req, res) => {
       }),
     );
 
-    // 🔍 LOGS TEMPORALES
+    /* // 🔍 LOGS TEMPORALES
     console.log("=================================");
     console.log("Partido:", match.home, "vs", match.away);
     console.log("matchDate:", match.matchDate);
     console.log("limitDate:", limitDate.toString());
     console.log("nowChile:", nowChile.toString());
     console.log("nowChile > limitDate ?", nowChile > limitDate);
-    console.log("=================================");
+    console.log("================================="); */
 
     if (nowChile > limitDate) {
       return res.status(403).json({
