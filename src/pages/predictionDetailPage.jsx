@@ -158,7 +158,11 @@ export default function PredictionDetailPage({ loadPredictions }) {
         <p className="prediction-date">{match.time}</p>
 
         {predictionClosed && (
-          <p className="prediction-status">🔒 Sin Predicción </p>
+          <p className="prediction-status">
+            {predictionExists
+              ? "✅ Predicción Registrada"
+              : "🔒 Predicción No Realizada"}
+          </p>
         )}
 
         <button
