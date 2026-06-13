@@ -537,6 +537,28 @@ body {
   font-weight: bold;
 }
 
+.date-group-title {
+  margin-bottom: 15px;
+  margin-top: 25px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #cbd5e1;
+}
+
+.finished-section-title {
+  text-align: center;
+  margin-top: 60px;
+  margin-bottom: 30px;
+  font-size: 36px;
+}
+
+.finished-round-title {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #94a3b8;
+}
+
 /* =========================
    DETALLE PREDICCIÓN
 ========================= */
