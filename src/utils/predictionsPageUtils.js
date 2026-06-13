@@ -15,24 +15,40 @@ export function getChileToday() {
 }
 
 export function formatDateTitle(matchDate) {
-  const [, month, day] = matchDate.split("-");
+  const date = new Date(`${matchDate}T00:00:00`);
 
-  const months = {
-    "01": "ENERO",
-    "02": "FEBRERO",
-    "03": "MARZO",
-    "04": "ABRIL",
-    "05": "MAYO",
-    "06": "JUNIO",
-    "07": "JULIO",
-    "08": "AGOSTO",
-    "09": "SEPTIEMBRE",
-    10: "OCTUBRE",
-    11: "NOVIEMBRE",
-    12: "DICIEMBRE",
-  };
+  const days = [
+    "DOMINGO",
+    "LUNES",
+    "MARTES",
+    "MIÉRCOLES",
+    "JUEVES",
+    "VIERNES",
+    "SÁBADO",
+  ];
 
-  return `${Number(day)} ${months[month]}`;
+  const months = [
+    "ENERO",
+    "FEBRERO",
+    "MARZO",
+    "ABRIL",
+    "MAYO",
+    "JUNIO",
+    "JULIO",
+    "AGOSTO",
+    "SEPTIEMBRE",
+    "OCTUBRE",
+    "NOVIEMBRE",
+    "DICIEMBRE",
+  ];
+
+  const dayName = days[date.getDay()];
+
+  const dayNumber = date.getDate();
+
+  const monthName = months[date.getMonth()];
+
+  return `${dayName} ${dayNumber} DE ${monthName}`;
 }
 
 export function buildPredictionGroups(matches) {
