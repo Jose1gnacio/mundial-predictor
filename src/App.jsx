@@ -253,7 +253,7 @@ function App() {
             isActive ? "tab-link active-tab" : "tab-link"
           }
         >
-          Partidos
+          Grupos
         </NavLink>
 
         <NavLink

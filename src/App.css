@@ -393,58 +393,6 @@ body {
 }
 
 /* =========================
-   PARTIDOS
-========================= */
-
-.matches-grid {
-  display: grid;
-  gap: 20px;
-}
-
-.match-card {
-  background: #1e1e1e;
-  border-radius: 16px;
-  padding: 20px;
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.match-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.match-row:first-child {
-  margin-bottom: 12px;
-}
-
-.team-line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 18px;
-  font-weight: 600;
-  min-width: 0;
-}
-
-.team-line span {
-  word-break: break-word;
-}
-
-.match-score {
-  min-width: 30px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.match-time {
-  margin-top: 16px;
-  color: #cbd5e1;
-}
-
-/* =========================
    PREDICCIONES
 ========================= */
 
@@ -557,6 +505,29 @@ body {
   font-size: 36px;
   margin-bottom: 20px;
   color: #94a3b8;
+}
+
+.match-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.match-row:first-child {
+  margin-bottom: 12px;
+}
+
+.team-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.team-line span {
+  word-break: break-word;
 }
 
 /* =========================
@@ -1069,5 +1040,88 @@ body {
 @media (max-width: 768px) {
   .rule-card {
     padding: 18px;
+  }
+}
+
+/* =========================
+   GRUPOS
+========================= */
+
+.groups-container {
+  display: grid;
+  gap: 25px;
+}
+
+.group-card {
+  background: #1e293b;
+  border-radius: 16px;
+  overflow-x: auto;
+}
+
+.group-title {
+  text-align: center;
+  padding: 18px;
+  font-size: 28px;
+}
+
+.group-header,
+.group-row {
+  display: grid;
+
+  grid-template-columns:
+    22px
+    minmax(170px, 1fr)
+    40px
+    40px
+    40px
+    40px
+    40px
+    40px
+    40px
+    55px;
+
+  align-items: center;
+
+  padding: 14px 10px;
+}
+
+.group-header {
+  background: #334155;
+  font-weight: bold;
+}
+
+.group-row {
+  border-top: 1px solid #475569;
+}
+
+.group-team-name {
+  font-weight: 600;
+}
+
+.group-points {
+  font-weight: bold;
+  color: gold;
+}
+
+@media (max-width: 768px) {
+  .group-title {
+    font-size: 22px;
+  }
+
+  .group-header,
+  .group-row {
+  grid-template-columns:
+    18px
+    minmax(95px, 1fr)
+    28px
+    28px
+    28px
+    28px
+    28px
+    28px
+    28px
+    34px;
+
+  font-size: 12px;
   }
 }

@@ -1,91 +1,60 @@
-import ReactCountryFlag from "react-country-flag";
-import { countryCodes } from "../assets/countryCodes";
+import { buildGroupStandings } from "../utils/groupStandingsUtils";
 
 function MatchesPage({ matches, loading }) {
   if (loading) {
-    return <p>Cargando partidos...</p>;
+    return <p>Cargando grupos...</p>;
   }
 
-  if (matches.length === 0) {
-    return <p>No hay partidos disponibles</p>;
-  }
+  const groups = buildGroupStandings(matches);
 
   return (
     <>
-      <h1 className="page-title">Calendario de Partidos</h1>
-      {Object.entries(
-        matches.reduce((acc, match) => {
-          if (!acc[match.round]) {
-            acc[match.round] = [];
-          }
+      <h1 className="page-title">Grupos</h1>
 
-          acc[match.round].push(match);
+      <div className="groups-container">
+        {Object.entries(groups).map(([groupName, teams]) => (
+          <div key={groupName} className="group-card">
+            <h2 className="group-title">{groupName}</h2>
 
-          return acc;
-        }, {}),
-      ).map(([round, roundMatches]) => (
-        <div key={round} className="round-section">
-          <h2 className="round-title">{round}</h2>
+            <div className="group-header">
+              <span>#</span>
+              <span>Equipo</span>
+              <span>PJ</span>
+              <span>G</span>
+              <span>E</span>
+              <span>P</span>
+              <span>GF</span>
+              <span>GC</span>
+              <span>DG</span>
+              <span>Pts</span>
+            </div>
 
-          <div className="matches-grid">
-            {roundMatches.map((match) => {
-              let homeScore = "-";
-              let awayScore = "-";
+            {teams.map((team, index) => (
+              <div key={team.team} className="group-row">
+                <span>{index + 1}</span>
 
-              if (
-                match.score &&
-                match.score !== "---" &&
-                match.score.includes("-")
-              ) {
-                const [home, away] = match.score.split("-");
+                <span className="group-team-name">{team.team}</span>
 
-                homeScore = home.trim();
-                awayScore = away.trim();
-              }
+                <span>{team.pj}</span>
 
-              return (
-                <div key={match.id} className="match-card">
-                  <div className="match-row">
-                    <div className="team-line">
-                      <ReactCountryFlag
-                        countryCode={countryCodes[match.home]}
-                        svg
-                        style={{
-                          width: "28px",
-                          height: "28px",
-                        }}
-                      />
+                <span>{team.g}</span>
 
-                      <span>{match.home}</span>
-                    </div>
+                <span>{team.e}</span>
 
-                    <div className="match-score">{homeScore}</div>
-                  </div>
+                <span>{team.p}</span>
 
-                  <div className="match-row">
-                    <div className="team-line">
-                      <ReactCountryFlag
-                        countryCode={countryCodes[match.away]}
-                        svg
-                        style={{
-                          width: "28px",
-                          height: "28px",
-                        }}
-                      />
+                <span>{team.gf}</span>
 
-                      <span>{match.away}</span>
-                    </div>
+                <span>{team.gc}</span>
 
-                    <div className="match-score">{awayScore}</div>
-                  </div>
+                <span>{team.dg > 0 ? `+${team.dg}` : team.dg}</span>
 
-                  <div className="match-time">{match.time}</div>
-                </div>
-              );
-            })}
+                <span className="group-points">{team.pts}</span>
+              </div>
+            ))}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </>
   );
 }
