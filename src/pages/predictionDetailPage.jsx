@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactCountryFlag from "react-country-flag";
 import { countryCodes } from "../assets/countryCodes";
-
 import { getMatchById, getPrediction } from "../services/firestoreApi";
-
 import { savePrediction } from "../services/predictionApi";
 import { auth } from "../firebase";
-
 import { isPredictionClosed } from "../utils/predictionUtils";
+import { formatDateTitle } from "../utils/predictionsPageUtils";
 
 export default function PredictionDetailPage({ loadPredictions }) {
   const { id } = useParams();
@@ -104,18 +102,17 @@ export default function PredictionDetailPage({ loadPredictions }) {
     cardClass = "expired";
   }
 
+  const matchHour = match.time?.split(" ")[1] || match.time;
+
   return (
     <div className="prediction-detail">
-      <div className={`prediction-card ${cardClass}`}>
+      <div className={`prediction-detail-card ${cardClass}`}>
         <div className="match-row">
           <div className="team-line">
             <ReactCountryFlag
               countryCode={countryCodes[match.home]}
               svg
-              style={{
-                width: "28px",
-                height: "28px",
-              }}
+              className="prediction-flag"
             />
 
             <span>{match.home}</span>
@@ -136,10 +133,7 @@ export default function PredictionDetailPage({ loadPredictions }) {
             <ReactCountryFlag
               countryCode={countryCodes[match.away]}
               svg
-              style={{
-                width: "28px",
-                height: "28px",
-              }}
+              className="prediction-flag"
             />
 
             <span>{match.away}</span>
@@ -155,7 +149,9 @@ export default function PredictionDetailPage({ loadPredictions }) {
           />
         </div>
 
-        <p className="prediction-date">{match.time}</p>
+        <p className="prediction-date">
+          📅 {formatDateTitle(match.matchDate)} &nbsp; • &nbsp; 🕒 {matchHour}
+        </p>
 
         {predictionClosed && (
           <p className="prediction-status">

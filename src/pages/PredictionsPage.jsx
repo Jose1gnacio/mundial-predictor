@@ -64,10 +64,7 @@ export default function PredictionsPage({ matches, predictions, loading }) {
             <ReactCountryFlag
               countryCode={countryCodes[match.home]}
               svg
-              style={{
-                width: "28px",
-                height: "28px",
-              }}
+              className="prediction-flag"
             />
 
             <span>{match.home}</span>
@@ -81,10 +78,7 @@ export default function PredictionsPage({ matches, predictions, loading }) {
             <ReactCountryFlag
               countryCode={countryCodes[match.away]}
               svg
-              style={{
-                width: "28px",
-                height: "28px",
-              }}
+              className="prediction-flag"
             />
 
             <span>{match.away}</span>
@@ -126,13 +120,13 @@ export default function PredictionsPage({ matches, predictions, loading }) {
 
       {Object.keys(finishedRounds).length > 0 && (
         <>
-          <h2 className="finished-section-title">🏁 PARTIDOS TERMINADOS</h2>
+          <h2 className="page-title">🏁 PARTIDOS TERMINADOS</h2>
 
           {Object.entries(finishedRounds)
             .sort(([a], [b]) => b.localeCompare(a))
             .map(([round, dates]) => (
               <div key={round} className="round-section">
-                <h2 className="finished-round-title">{round}</h2>
+                <h2 className="round-title">{round}</h2>
 
                 {Object.entries(dates)
                   .sort(([a], [b]) => b.localeCompare(a))
