@@ -24,15 +24,11 @@ import UpcomingMatchesCarousel from "./components/UpcomingMatchesCarousel";
 
 function App() {
   const [user, setUser] = useState(null);
-
+  const [authLoading, setAuthLoading] = useState(true);
   const [userStatus, setUserStatus] = useState(null);
-
   const [matches, setMatches] = useState([]);
-
   const [predictions, setPredictions] = useState({});
-
   const [loading, setLoading] = useState(false);
-
   const [dashboardStats, setDashboardStats] = useState({
     rank: "-",
     points: 0,
@@ -46,19 +42,27 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) {
+      try {
+        if (!currentUser) {
+          setUser(null);
+          setUserStatus(null);
+        } else {
+          await saveUser(currentUser);
+
+          const firestoreUser = await getUserById(currentUser.uid);
+
+          setUser(currentUser);
+
+          setUserStatus(firestoreUser?.status || "pending");
+        }
+      } catch (error) {
+        console.error("Error verificando sesión:", error);
+
         setUser(null);
         setUserStatus(null);
-        return;
+      } finally {
+        setAuthLoading(false);
       }
-
-      await saveUser(currentUser);
-
-      const firestoreUser = await getUserById(currentUser.uid);
-
-      setUser(currentUser);
-
-      setUserStatus(firestoreUser?.status || "pending");
     });
 
     return () => unsubscribe();
@@ -146,6 +150,22 @@ function App() {
   const logout = async () => {
     await signOut(auth);
   };
+
+  if (authLoading) {
+    return (
+      <div className="login-container">
+        <h1 className="login-title">
+          <span>Mundial de Predicciones</span>
+
+          <span>La Verbena</span>
+
+          <span>⚽</span>
+        </h1>
+
+        <h2>Cargando...</h2>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
