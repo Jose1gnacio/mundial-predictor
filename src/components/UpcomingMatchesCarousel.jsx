@@ -49,34 +49,30 @@ function UpcomingMatchesCarousel({ matches }) {
               <div className="carousel-date">
                 📅 {formatDate(match.matchDate)}
               </div>
-
+              <div className="carousel-divider"></div>
               <div className="carousel-teams">
                 <ReactCountryFlag
                   countryCode={countryCodes[match.home]}
                   svg
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    marginRight: "8px",
-                  }}
+                  className="carousel-flag"
                 />
 
-                <span>
-                  {match.home} vs {match.away}
-                </span>
+                <span className="home-team">{match.home}</span>
+
+                <span className="vs-text">vs</span>
+
+                <span className="away-team">{match.away}</span>
 
                 <ReactCountryFlag
                   countryCode={countryCodes[match.away]}
                   svg
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    marginLeft: "8px",
-                  }}
+                  className="carousel-flag"
                 />
               </div>
 
-              <div className="carousel-time">🕗 {formatTime(match.time)}</div>
+              <div className="carousel-divider"></div>
+
+              <div className="carousel-time">🕒 {formatTime(match.time)}</div>
             </div>
           ))}
         </div>

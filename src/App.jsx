@@ -311,7 +311,7 @@ function App() {
               isActive ? "tab-link active-tab" : "tab-link"
             }
           >
-            <FaClipboardList /> Reglas
+            <FaClipboardList className="tab-icon rules-icon" /> Reglas
           </NavLink>
 
           <NavLink
@@ -320,7 +320,7 @@ function App() {
               isActive ? "tab-link active-tab" : "tab-link"
             }
           >
-            <FaTrophy /> Grupos
+            <FaTrophy className="tab-icon groups-icon" /> Grupos
           </NavLink>
 
           <NavLink
@@ -329,7 +329,7 @@ function App() {
               isActive ? "tab-link active-tab" : "tab-link"
             }
           >
-            <FaBullseye /> Predicciones
+            <FaBullseye className="tab-icon predictions-icon" /> Predicciones
           </NavLink>
 
           <NavLink
@@ -338,7 +338,7 @@ function App() {
               isActive ? "tab-link active-tab" : "tab-link"
             }
           >
-            <FaFutbol /> Resultados
+            <FaFutbol className="tab-icon results-icon" /> Resultados
           </NavLink>
 
           <NavLink
@@ -347,7 +347,7 @@ function App() {
               isActive ? "tab-link active-tab" : "tab-link"
             }
           >
-            <FaMedal /> Clasificación
+            <FaMedal className="tab-icon ranking-icon" /> Clasificación
           </NavLink>
         </section>
 

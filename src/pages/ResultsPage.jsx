@@ -7,6 +7,8 @@ import {
   parseScore,
 } from "../utils/scoringUtils";
 
+import { formatDateTitle } from "../utils/predictionsPageUtils";
+
 function ResultsPage({ matches, predictions, loading }) {
   if (loading) {
     return <p>Cargando resultados...</p>;
@@ -29,122 +31,150 @@ function ResultsPage({ matches, predictions, loading }) {
   return (
     <>
       <h1 className="page-title">Resultados Oficiales</h1>
-      {Object.entries(groupedMatches).map(([round, roundMatches]) => (
-        <div key={round} className="round-section">
-          <h2 className="round-title">{round}</h2>
 
-          <div className="results-grid">
-            {roundMatches.map((match) => {
-              const prediction = predictions?.[match.id];
+      {Object.entries(groupedMatches).map(([round, roundMatches]) => {
+        const matchesByDate = roundMatches.reduce((acc, match) => {
+          if (!acc[match.matchDate]) {
+            acc[match.matchDate] = [];
+          }
 
-              const parsedScore = parseScore(match.score);
+          acc[match.matchDate].push(match);
 
-              const status = getPredictionStatus(match.score, prediction);
+          return acc;
+        }, {});
 
-              const points = calculatePoints(match.score, prediction);
+        return (
+          <div key={round} className="round-section">
+            <h2 className="round-title">{round}</h2>
 
-              const date =
-                match.matchDate?.split("-").reverse().slice(0, 2).join("/") ||
-                "-";
+            {Object.entries(matchesByDate).map(([matchDate, dateMatches]) => (
+              <div key={matchDate}>
+                <h3 className="date-group-title">
+                  📅 {formatDateTitle(matchDate)}
+                </h3>
 
-              const time = match.time?.split(" ")[1] || "-";
+                <div className="results-grid">
+                  {dateMatches.map((match) => {
+                    const prediction = predictions?.[match.id];
 
-              return (
-                <div key={match.id} className="result-card">
-                  {/* CABECERA */}
+                    const parsedScore = parseScore(match.score);
 
-                  <div className="result-header-row">
-                    <div className="result-date-column">
-                      <div>{date}</div>
-                      <div>{time}</div>
-                    </div>
+                    const status = getPredictionStatus(match.score, prediction);
 
-                    <div className="result-home-team">
-                      <ReactCountryFlag
-                        countryCode={countryCodes[match.home]}
-                        svg
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                      />
+                    const points = calculatePoints(match.score, prediction);
 
-                      <span>{match.home}</span>
-                    </div>
+                    const time = match.time?.split(" ")[1] || "-";
 
-                    <div className="result-middle-column">-</div>
+                    const badgeClass =
+                      status === "⏳ Pendiente"
+                        ? "status-pending"
+                        : status === "🚫 Sin predicción"
+                          ? "status-no-prediction"
+                          : points > 0
+                            ? "status-success"
+                            : "status-fail";
 
-                    <div className="result-away-team">
-                      <span>{match.away}</span>
+                    return (
+                      <div key={match.id} className="result-card">
+                        {/* PARTIDO */}
 
-                      <ReactCountryFlag
-                        countryCode={countryCodes[match.away]}
-                        svg
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                      />
-                    </div>
-                  </div>
+                        <div className="result-match-box">
+                          <div className="result-section-title result-time-title">
+                            🕒 {time}
+                          </div>
 
-                  {/* RESULTADO */}
+                          <div className="result-team-home">
+                            <ReactCountryFlag
+                              countryCode={countryCodes[match.home]}
+                              svg
+                              className="result-flag"
+                            />
 
-                  <div className="result-row">
-                    <div className="result-label">Resultado</div>
+                            <span className="result-team-name">
+                              {match.home}
+                            </span>
+                          </div>
 
-                    <div className="result-value">
-                      {parsedScore ? parsedScore.homeGoals : "-"}
-                    </div>
+                          <div className="result-vs">-</div>
 
-                    <div className="result-middle-column">-</div>
+                          <div className="result-team-away">
+                            <span className="result-team-name">
+                              {match.away}
+                            </span>
 
-                    <div className="result-value">
-                      {parsedScore ? parsedScore.awayGoals : "-"}
-                    </div>
-                  </div>
+                            <ReactCountryFlag
+                              countryCode={countryCodes[match.away]}
+                              svg
+                              className="result-flag"
+                            />
+                          </div>
+                        </div>
 
-                  {/* PREDICCION */}
+                        {/* RESULTADO */}
 
-                  <div className="result-row">
-                    <div className="result-label">Predicción</div>
+                        <div className="result-section">
+                          <div className="result-section-title">Resultado</div>
 
-                    <div className="result-value">
-                      {prediction ? prediction.homeGoals : "-"}
-                    </div>
+                          <div className="result-section-content">
+                            <div className="result-score">
+                              {parsedScore ? parsedScore.homeGoals : "-"}
+                            </div>
 
-                    <div className="result-middle-column">-</div>
+                            <div className="result-score-separator">-</div>
 
-                    <div className="result-value">
-                      {prediction ? prediction.awayGoals : "-"}
-                    </div>
-                  </div>
+                            <div className="result-score">
+                              {parsedScore ? parsedScore.awayGoals : "-"}
+                            </div>
+                          </div>
+                        </div>
 
-                  {/* PUNTOS */}
+                        {/* PREDICCIÓN */}
 
-                  <div className="result-row">
-                    <div className="result-label">Puntos</div>
+                        <div className="result-section">
+                          <div className="result-section-title">Predicción</div>
 
-                    <div
-                      className="result-points-row"
-                      style={{ gridColumn: "2 / 5" }}
-                    >
-                      <span>
-                        {status === "⏳ Pendiente" ||
-                        status === "🚫 Sin predicción"
-                          ? "-"
-                          : points}
-                      </span>
+                          <div className="result-section-content">
+                            <div className="result-score">
+                              {prediction ? prediction.homeGoals : "-"}
+                            </div>
 
-                      <span>{status}</span>
-                    </div>
-                  </div>
+                            <div className="result-score-separator">-</div>
+
+                            <div className="result-score">
+                              {prediction ? prediction.awayGoals : "-"}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* PUNTOS */}
+
+                        <div className="result-section">
+                          <div className="result-section-title">Puntos</div>
+
+                          <div className="result-points-content">
+                            <div className="result-points-value">
+                              {status === "⏳ Pendiente" ||
+                              status === "🚫 Sin predicción"
+                                ? "-"
+                                : points}
+                            </div>
+
+                            <div
+                              className={`result-status-badge ${badgeClass}`}
+                            >
+                              {status}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </>
   );
 }

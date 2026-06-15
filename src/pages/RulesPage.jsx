@@ -3,56 +3,72 @@ export default function RulesPage() {
     <div className="rules-container">
       <h1 className="page-title">Reglas del Mundial</h1>
 
-      <div className="rules-grid">
-        <div className="rule-card">
+      <div className="rules-list">
+        <div className="rule-card purple-card">
           <h3>📅 Plazo de Predicción</h3>
 
-          <p>Se puede predecir en cualquier momento.</p>
+          <div className="rule-divider"></div>
 
-          <p>El límite para cada partido es a las 23:59 del día anterior.</p>
+          <p>🕒 Se puede predecir y/o editar en cualquier momento.</p>
 
-          <p>Después de ese horario no se podrán realizar modificaciones.</p>
+          <p>
+            🕒 El límite para cada partido es a las 23:59 del día anterior al
+            encuentro.
+          </p>
+
+          <p>ℹ️ Después de ese horario no se podrán realizar modificaciones.</p>
         </div>
 
-        <div className="rule-card">
+        <div className="rule-card green-card">
           <h3>🏆 Sistema de Puntuación</h3>
 
-          <p>Acertar ganador: 1 punto.</p>
+          <div className="rule-divider"></div>
 
-          <p>Acertar marcador exacto: 3 puntos adicionales.</p>
+          <p>🎯 Acertar ganador: 1 punto.</p>
 
-          <p>Puntaje máximo por partido: 4 puntos.</p>
+          <p>✅ Acertar marcador exacto: 3 puntos adicionales.</p>
+
+          <p>⭐ Puntaje máximo por partido: 4 puntos.</p>
         </div>
 
-        <div className="rule-card">
+        <div className="rule-card blue-card">
           <h3>🤝 Empates</h3>
 
+          <div className="rule-divider"></div>
+
           <p>
-            Los empates solo otorgarán puntaje completo cuando el marcador sea
-            acertado exactamente.
+            👥 Los empates solo otorgarán puntaje completo cuando el marcador
+            sea acertado exactamente.
           </p>
         </div>
 
-        <div className="rule-card">
+        <div className="rule-card orange-card">
           <h3>⚽ Definición por Penales</h3>
 
-          <p>Los goles de la tanda de penales no se consideran.</p>
+          <div className="rule-divider"></div>
+
+          <p>🥅 Los goles de la tanda de penales no se consideran.</p>
 
           <p>
-            Solo se otorgará 1 punto a quienes acierten la selección ganadora.
+            🏆 Solo se otorgará 1 punto a quienes acierten la selección
+            ganadora.
           </p>
         </div>
 
-        <div className="rule-card">
+        <div className="rule-card purple-card">
           <h3>🏅 Clasificación</h3>
 
-          <p>La tabla se actualizará automáticamente durante el torneo.</p>
+          <div className="rule-divider"></div>
 
-          <p>Ganará quien acumule más puntos al finalizar el Mundial.</p>
+          <p>📊 La tabla se actualizará automáticamente durante el torneo.</p>
+
+          <p>🏆 Ganará quien acumule más puntos al finalizar el Mundial.</p>
         </div>
 
-        <div className="rule-card">
+        <div className="rule-card green-card">
           <h3>🎁 Premios</h3>
+
+          <div className="rule-divider"></div>
 
           <p>🥇 Primer Lugar</p>
 
@@ -61,7 +77,8 @@ export default function RulesPage() {
           <p>🥉 Tercer Lugar</p>
 
           <p>
-            Los premios serán informados una vez finalizadas las inscripciones.
+            📢 Los premios serán informados una vez finalizadas las
+            inscripciones.
           </p>
         </div>
       </div>
