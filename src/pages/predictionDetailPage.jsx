@@ -23,6 +23,8 @@ export default function PredictionDetailPage({ loadPredictions }) {
 
   const [predictionExists, setPredictionExists] = useState(false);
 
+  const [savingPrediction, setSavingPrediction] = useState(false);
+
   useEffect(() => {
     const loadData = async () => {
       const matchData = await getMatchById(id);
@@ -61,6 +63,8 @@ export default function PredictionDetailPage({ loadPredictions }) {
         return;
       }
 
+      setSavingPrediction(true);
+
       await savePrediction({
         userId: user.uid,
         matchId: match.id,
@@ -69,6 +73,8 @@ export default function PredictionDetailPage({ loadPredictions }) {
       });
 
       await loadPredictions(user.uid);
+
+      setSavingPrediction(false);
 
       alert(
         predictionExists
@@ -79,6 +85,8 @@ export default function PredictionDetailPage({ loadPredictions }) {
       navigate("/predictions");
     } catch (error) {
       console.error(error);
+
+      setSavingPrediction(false);
 
       alert("Error guardando predicción");
     }
@@ -106,6 +114,20 @@ export default function PredictionDetailPage({ loadPredictions }) {
 
   return (
     <div className="prediction-detail">
+      {savingPrediction && (
+        <div className="saving-overlay">
+          <div className="saving-modal">
+            <div className="saving-spinner"></div>
+
+            <h3>Guardando predicción...</h3>
+
+            <p>
+              Esto puede tardar unos segundos mientras se conecta el servidor.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className={`prediction-detail-card ${cardClass}`}>
         <div className="match-row">
           <div className="team-line">
@@ -150,7 +172,8 @@ export default function PredictionDetailPage({ loadPredictions }) {
         </div>
 
         <p className="prediction-date">
-          📅 {formatDateTitle(match.matchDate)} &nbsp; • &nbsp; 🕒 {matchHour}
+          📅 {formatDateTitle(match.matchDate)}
+          &nbsp; • &nbsp; 🕒 {matchHour}
         </p>
 
         {predictionClosed && (
