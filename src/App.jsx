@@ -393,7 +393,13 @@ function App() {
 
             <Route
               path="/ranking"
-              element={<RankingPage matches={matches} />}
+              element={
+                <RankingPage
+                  matches={matches}
+                  ranking={ranking}
+                  loading={loading}
+                />
+              }
             />
           </Routes>
         </main>
