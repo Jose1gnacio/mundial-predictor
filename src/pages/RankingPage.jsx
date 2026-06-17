@@ -4,6 +4,8 @@ import { getApprovedUsers, getAllPredictions } from "../services/firestoreApi";
 
 import { calculatePoints } from "../utils/scoringUtils";
 
+import { auth } from "../firebase";
+
 function RankingPage({ matches }) {
   const [ranking, setRanking] = useState([]);
 
@@ -59,6 +61,8 @@ function RankingPage({ matches }) {
     return <p>Cargando clasificación...</p>;
   }
 
+  const currentUserUid = auth.currentUser?.uid;
+
   return (
     <div className="ranking-container">
       <h1 className="page-title">Tabla de Clasificación</h1>
@@ -71,7 +75,12 @@ function RankingPage({ matches }) {
         </div>
 
         {ranking.map((user, index) => (
-          <div key={user.uid} className="ranking-row">
+          <div
+            key={user.uid}
+            className={`ranking-row ${
+              user.uid === currentUserUid ? "current-user-row" : ""
+            }`}
+          >
             <div
               className={`ranking-position ${
                 index === 0
