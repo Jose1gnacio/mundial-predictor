@@ -1,17 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function AdminPage({ matches }) {
-  const groupedMatches = matches.reduce((acc, match) => {
-    if (!acc[match.round]) {
-      acc[match.round] = [];
-    }
+  const [scores, setScores] = useState({});
 
-    acc[match.round].push(match);
+  const [savingMatchId, setSavingMatchId] = useState(null);
 
-    return acc;
-  }, {});
-
-  const [scores, setScores] = useState(() => {
+  useEffect(() => {
     const initialScores = {};
 
     matches.forEach((match) => {
@@ -30,8 +26,18 @@ function AdminPage({ matches }) {
       }
     });
 
-    return initialScores;
-  });
+    setScores(initialScores);
+  }, [matches]);
+
+  const groupedMatches = matches.reduce((acc, match) => {
+    if (!acc[match.round]) {
+      acc[match.round] = [];
+    }
+
+    acc[match.round].push(match);
+
+    return acc;
+  }, {});
 
   const handleScoreChange = (matchId, field, value) => {
     setScores((prev) => ({
@@ -41,6 +47,52 @@ function AdminPage({ matches }) {
         [field]: value,
       },
     }));
+  };
+
+  const handleSaveResult = async (matchId) => {
+    try {
+      const scoreData = scores?.[matchId];
+
+      if (!scoreData) {
+        alert("No se encontraron datos para este partido");
+
+        return;
+      }
+
+      if (scoreData.homeGoals === "" || scoreData.awayGoals === "") {
+        alert("Debes ingresar ambos marcadores");
+
+        return;
+      }
+
+      setSavingMatchId(matchId);
+
+      const response = await fetch(`${BASE_URL}/admin/update-match`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          matchId,
+          homeGoals: Number(scoreData.homeGoals),
+          awayGoals: Number(scoreData.awayGoals),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error actualizando resultado");
+      }
+
+      alert("Resultado actualizado correctamente");
+    } catch (error) {
+      console.error(error);
+
+      alert("Error actualizando resultado");
+    } finally {
+      setSavingMatchId(null);
+    }
   };
 
   return (
@@ -84,7 +136,15 @@ function AdminPage({ matches }) {
                   />
                 </div>
 
-                <button className="admin-save-btn">Guardar Resultado</button>
+                <button
+                  className="admin-save-btn"
+                  onClick={() => handleSaveResult(match.id)}
+                  disabled={savingMatchId === match.id}
+                >
+                  {savingMatchId === match.id
+                    ? "Guardando..."
+                    : "Guardar Resultado"}
+                </button>
               </div>
             ))}
           </div>

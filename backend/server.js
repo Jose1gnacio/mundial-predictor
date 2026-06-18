@@ -3,6 +3,7 @@ import cors from "cors";
 
 import { getWorldCupMatches } from "./scraper.js";
 import { db } from "./firebase.js";
+import { rebuildRanking } from "./services/rankingService.js";
 
 const app = express();
 
@@ -176,6 +177,26 @@ app.post("/admin/update-match", async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Error actualizando resultado",
+    });
+  }
+});
+
+// 🔥 ADMIN - reconstruir ranking completo
+app.post("/admin/rebuild-ranking", async (req, res) => {
+  try {
+    const totalUsers = await rebuildRanking();
+
+    res.json({
+      success: true,
+      usersProcessed: totalUsers,
+      message: "Ranking reconstruido correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: "Error reconstruyendo ranking",
     });
   }
 });
