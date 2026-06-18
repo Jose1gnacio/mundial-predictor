@@ -28,6 +28,7 @@ import ResultsPage from "./pages/ResultsPage";
 import RankingPage from "./pages/RankingPage";
 import PredictionDetailPage from "./pages/PredictionDetailPage";
 import UpcomingMatchesCarousel from "./components/UpcomingMatchesCarousel";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -399,6 +400,17 @@ function App() {
                   ranking={ranking}
                   loading={loading}
                 />
+              }
+            />
+
+            <Route
+              path="/admin"
+              element={
+                user?.uid === "6q5tXh0cWYQmyMPnkPmKIXeN9S12" ? (
+                  <AdminPage matches={matches} />
+                ) : (
+                  <Navigate to="/" />
+                )
               }
             />
           </Routes>

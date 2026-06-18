@@ -112,15 +112,6 @@ app.post("/predictions", async (req, res) => {
       }),
     );
 
-    /* // 🔍 LOGS TEMPORALES
-    console.log("=================================");
-    console.log("Partido:", match.home, "vs", match.away);
-    console.log("matchDate:", match.matchDate);
-    console.log("limitDate:", limitDate.toString());
-    console.log("nowChile:", nowChile.toString());
-    console.log("nowChile > limitDate ?", nowChile > limitDate);
-    console.log("================================="); */
-
     if (nowChile > limitDate) {
       return res.status(403).json({
         success: false,
@@ -152,6 +143,39 @@ app.post("/predictions", async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Error guardando predicción",
+    });
+  }
+});
+
+// 🔥 ADMIN - actualizar resultado de partido
+app.post("/admin/update-match", async (req, res) => {
+  try {
+    const { matchId, homeGoals, awayGoals } = req.body;
+
+    if (!matchId || homeGoals === undefined || awayGoals === undefined) {
+      return res.status(400).json({
+        success: false,
+        error: "Datos incompletos",
+      });
+    }
+
+    const score = `${homeGoals}-${awayGoals}`;
+
+    await db.collection("matches").doc(matchId).update({
+      score,
+      updatedAt: new Date().toISOString(),
+    });
+
+    res.json({
+      success: true,
+      message: "Resultado actualizado correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: "Error actualizando resultado",
     });
   }
 });
