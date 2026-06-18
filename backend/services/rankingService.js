@@ -1,4 +1,6 @@
-export function getWinner(homeGoals, awayGoals) {
+import { db } from "../firebase.js";
+
+function getWinner(homeGoals, awayGoals) {
   if (homeGoals > awayGoals) {
     return "HOME";
   }
@@ -10,7 +12,7 @@ export function getWinner(homeGoals, awayGoals) {
   return "DRAW";
 }
 
-export function parseScore(score) {
+function parseScore(score) {
   if (!score || score === "---" || score === "-") {
     return null;
   }
@@ -25,7 +27,7 @@ export function parseScore(score) {
   };
 }
 
-export function calculatePoints(realScore, prediction) {
+function calculatePoints(realScore, prediction) {
   const parsedScore = parseScore(realScore);
 
   if (!parsedScore || !prediction) {
@@ -35,10 +37,8 @@ export function calculatePoints(realScore, prediction) {
   const { homeGoals: realHomeGoals, awayGoals: realAwayGoals } = parsedScore;
 
   const predictedHomeGoals = prediction.homeGoals;
-
   const predictedAwayGoals = prediction.awayGoals;
 
-  // ✅ Marcador exacto
   if (
     realHomeGoals === predictedHomeGoals &&
     realAwayGoals === predictedAwayGoals
@@ -50,89 +50,103 @@ export function calculatePoints(realScore, prediction) {
 
   const predictedWinner = getWinner(predictedHomeGoals, predictedAwayGoals);
 
-  // 🟨 Solo ganador
   if (realWinner === predictedWinner) {
     return 1;
   }
 
-  // ❌ Error
   return 0;
 }
 
-export function getPredictionStatus(realScore, prediction) {
-  const parsedScore = parseScore(realScore);
+export async function rebuildRanking() {
+  const approvedUsersSnapshot = await db
+    .collection("users")
+    .where("status", "==", "approved")
+    .get();
 
-  if (!parsedScore) {
-    return "⏳ Pendiente";
+  const matchesSnapshot = await db.collection("matches").get();
+
+  const predictionsSnapshot = await db.collection("predictions").get();
+
+  const users = approvedUsersSnapshot.docs.map((doc) => doc.data());
+
+  const matches = matchesSnapshot.docs.map((doc) => doc.data());
+
+  const predictions = predictionsSnapshot.docs.map((doc) => doc.data());
+
+  const ranking = [];
+
+  for (const user of users) {
+    const userPredictions = predictions.filter(
+      (prediction) => prediction.userId === user.uid,
+    );
+
+    let points = 0;
+    let exacts = 0;
+    let winners = 0;
+    let failed = 0;
+    let missing = 0;
+
+    matches.forEach((match) => {
+      const prediction = userPredictions.find((p) => p.matchId === match.id);
+
+      const parsedScore = parseScore(match.score);
+
+      if (!prediction) {
+        missing++;
+
+        return;
+      }
+
+      if (!parsedScore) {
+        return;
+      }
+
+      const matchPoints = calculatePoints(match.score, prediction);
+
+      points += matchPoints;
+
+      if (matchPoints === 4) {
+        exacts++;
+
+        return;
+      }
+
+      if (matchPoints === 1) {
+        winners++;
+
+        return;
+      }
+
+      failed++;
+    });
+
+    ranking.push({
+      uid: user.uid,
+      displayName: user.displayName,
+      points,
+      exacts,
+      winners,
+      failed,
+      missing,
+      rank: 0,
+    });
   }
 
-  if (!prediction) {
-    return "🚫 Sin predicción";
+  ranking.sort((a, b) => b.points - a.points);
+
+  for (let i = 0; i < ranking.length; i++) {
+    ranking[i].rank = i + 1;
   }
 
-  const points = calculatePoints(realScore, prediction);
+  const batch = db.batch();
 
-  if (points === 4) {
-    return "✅ Exacto";
-  }
+  ranking.forEach((user) => {
+    const ref = db.collection("ranking").doc(user.uid);
 
-  if (points === 1) {
-    return "🟨 Ganador";
-  }
-
-  return "❌ Error";
-}
-
-export function calculateUserStats(matches, predictions) {
-  let points = 0;
-
-  let exacts = 0;
-
-  let winners = 0;
-
-  let failed = 0;
-
-  let missing = 0;
-
-  matches.forEach((match) => {
-    const prediction = predictions?.[match.id];
-
-    const parsedScore = parseScore(match.score);
-
-    if (!prediction) {
-      missing++;
-
-      return;
-    }
-
-    if (!parsedScore) {
-      return;
-    }
-
-    const matchPoints = calculatePoints(match.score, prediction);
-
-    points += matchPoints;
-
-    if (matchPoints === 4) {
-      exacts++;
-
-      return;
-    }
-
-    if (matchPoints === 1) {
-      winners++;
-
-      return;
-    }
-
-    failed++;
+    batch.set(ref, user);
   });
 
-  return {
-    points,
-    exacts,
-    winners,
-    failed,
-    missing,
-  };
+  await batch.commit();
+
+  return ranking.length;
 }
