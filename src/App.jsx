@@ -47,6 +47,37 @@ function App() {
 
   const [ranking, setRanking] = useState([]);
 
+  const loadData = async () => {
+    if (!user || userStatus !== "approved") return;
+
+    setLoading(true);
+
+    const matchesArray = await getMatchesFromFirestore();
+
+    setMatches(matchesArray);
+
+    await loadPredictions(user.uid);
+
+    const rankingData = await getRanking();
+
+    setRanking(rankingData);
+
+    const rankingUser = await getRankingByUser(user.uid);
+
+    if (rankingUser) {
+      setDashboardStats({
+        rank: rankingUser.rank || "-",
+        points: rankingUser.points || 0,
+        exacts: rankingUser.exacts || 0,
+        winners: rankingUser.winners || 0,
+        failed: rankingUser.failed || 0,
+        missing: rankingUser.missing || 0,
+      });
+    }
+
+    setLoading(false);
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       try {
@@ -85,55 +116,6 @@ function App() {
 
   useEffect(() => {
     if (!user || userStatus !== "approved") return;
-
-    const loadData = async () => {
-      setLoading(true);
-
-      const matchesArray = await getMatchesFromFirestore();
-
-      setMatches(matchesArray);
-
-      const userPredictions = await loadPredictions(user.uid);
-
-      const rankingData = await getRanking();
-
-      setRanking(rankingData);
-
-      /* console.log("UID usuario logueado:", user.uid);
-
-      console.log(
-        "Usuario encontrado en ranking:",
-        rankingData.find((u) => u.uid === user.uid),
-      );
-
-      console.log(
-        "Posición calculada:",
-        rankingData.findIndex((u) => u.uid === user.uid) + 1,
-      ); */
-
-      let rankingUser = null;
-
-      try {
-        rankingUser = await getRankingByUser(user.uid);
-
-        console.log("rankingUser", rankingUser);
-      } catch (error) {
-        console.error("Error ranking:", error);
-      }
-
-      if (rankingUser) {
-        setDashboardStats({
-          rank: rankingUser.rank || "-",
-          points: rankingUser.points || 0,
-          exacts: rankingUser.exacts || 0,
-          winners: rankingUser.winners || 0,
-          failed: rankingUser.failed || 0,
-          missing: rankingUser.missing || 0,
-        });
-      }
-
-      setLoading(false);
-    };
 
     loadData();
   }, [user, userStatus]);
@@ -402,7 +384,7 @@ function App() {
               path="/admin"
               element={
                 user?.uid === "6q5tXh0cWYQmyMPnkPmKIXeN9S12" ? (
-                  <AdminPage matches={matches} />
+                  <AdminPage matches={matches} loadData={loadData} />
                 ) : (
                   <Navigate to="/" />
                 )

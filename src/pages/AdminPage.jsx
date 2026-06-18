@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-function AdminPage({ matches }) {
+function AdminPage({ matches, loadData }) {
   const [scores, setScores] = useState({});
 
   const [savingMatchId, setSavingMatchId] = useState(null);
@@ -87,6 +87,10 @@ function AdminPage({ matches }) {
         throw new Error(data.error || "Error actualizando resultado");
       }
 
+      if (loadData) {
+        await loadData();
+      }
+
       alert("Resultado actualizado correctamente");
     } catch (error) {
       console.error(error);
@@ -109,6 +113,10 @@ function AdminPage({ matches }) {
 
       if (!response.ok) {
         throw new Error(data.error || "Error reconstruyendo ranking");
+      }
+
+      if (loadData) {
+        await loadData();
       }
 
       alert(
