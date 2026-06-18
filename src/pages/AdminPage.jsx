@@ -7,6 +7,8 @@ function AdminPage({ matches }) {
 
   const [savingMatchId, setSavingMatchId] = useState(null);
 
+  const [rebuildingRanking, setRebuildingRanking] = useState(false);
+
   useEffect(() => {
     const initialScores = {};
 
@@ -95,9 +97,47 @@ function AdminPage({ matches }) {
     }
   };
 
+  const handleRebuildRanking = async () => {
+    try {
+      setRebuildingRanking(true);
+
+      const response = await fetch(`${BASE_URL}/admin/rebuild-ranking`, {
+        method: "POST",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error reconstruyendo ranking");
+      }
+
+      alert(
+        `Ranking reconstruido correctamente (${data.usersProcessed} usuarios)`,
+      );
+    } catch (error) {
+      console.error(error);
+
+      alert("Error reconstruyendo ranking");
+    } finally {
+      setRebuildingRanking(false);
+    }
+  };
+
   return (
     <>
       <h1 className="page-title">Panel de Administración</h1>
+
+      <div className="admin-card">
+        <button
+          className="admin-save-btn"
+          onClick={handleRebuildRanking}
+          disabled={rebuildingRanking}
+        >
+          {rebuildingRanking
+            ? "Reconstruyendo Ranking..."
+            : "Reconstruir Ranking"}
+        </button>
+      </div>
 
       {Object.entries(groupedMatches).map(([round, roundMatches]) => (
         <div key={round} className="round-section">

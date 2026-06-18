@@ -16,11 +16,10 @@ import {
   getUserPredictions,
   saveUser,
   getUserById,
-  getApprovedUsers,
-  getAllPredictions,
+  getRanking,
+  getRankingByUser,
 } from "./services/firestoreApi";
 
-import { buildRanking, buildDashboardStats } from "./utils/dashboardUtils";
 import RulesPage from "./pages/RulesPage";
 import MatchesPage from "./pages/MatchesPage";
 import PredictionsPage from "./pages/PredictionsPage";
@@ -96,15 +95,7 @@ function App() {
 
       const userPredictions = await loadPredictions(user.uid);
 
-      const approvedUsers = await getApprovedUsers();
-
-      const allPredictions = await getAllPredictions();
-
-      const rankingData = buildRanking(
-        approvedUsers,
-        allPredictions,
-        matchesArray,
-      );
+      const rankingData = await getRanking();
 
       setRanking(rankingData);
 
@@ -120,28 +111,32 @@ function App() {
         rankingData.findIndex((u) => u.uid === user.uid) + 1,
       ); */
 
-      const stats = buildDashboardStats(
-        user.uid,
-        userPredictions,
-        matchesArray,
-        rankingData,
-      );
+      let rankingUser = null;
 
-      setDashboardStats(stats);
+      try {
+        rankingUser = await getRankingByUser(user.uid);
+
+        console.log("rankingUser", rankingUser);
+      } catch (error) {
+        console.error("Error ranking:", error);
+      }
+
+      if (rankingUser) {
+        setDashboardStats({
+          rank: rankingUser.rank || "-",
+          points: rankingUser.points || 0,
+          exacts: rankingUser.exacts || 0,
+          winners: rankingUser.winners || 0,
+          failed: rankingUser.failed || 0,
+          missing: rankingUser.missing || 0,
+        });
+      }
 
       setLoading(false);
     };
 
     loadData();
   }, [user, userStatus]);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const stats = buildDashboardStats(user.uid, predictions, matches, ranking);
-
-    setDashboardStats(stats);
-  }, [predictions, matches, ranking, user]);
 
   const loginGoogle = async () => {
     try {

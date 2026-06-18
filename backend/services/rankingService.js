@@ -150,3 +150,82 @@ export async function rebuildRanking() {
 
   return ranking.length;
 }
+
+export async function updateRankingForMatch(matchId) {
+  const matchDoc = await db.collection("matches").doc(matchId).get();
+
+  if (!matchDoc.exists) {
+    throw new Error("Partido no encontrado");
+  }
+
+  const match = matchDoc.data();
+
+  if (!match.score || match.score === "---") {
+    return;
+  }
+
+  const predictionsSnapshot = await db
+    .collection("predictions")
+    .where("matchId", "==", matchId)
+    .get();
+
+  const batch = db.batch();
+
+  for (const predictionDoc of predictionsSnapshot.docs) {
+    const prediction = predictionDoc.data();
+
+    const rankingRef = db.collection("ranking").doc(prediction.userId);
+
+    const rankingDoc = await rankingRef.get();
+
+    if (!rankingDoc.exists) {
+      continue;
+    }
+
+    const rankingUser = rankingDoc.data();
+
+    const matchPoints = calculatePoints(match.score, prediction);
+
+    let exacts = rankingUser.exacts || 0;
+    let winners = rankingUser.winners || 0;
+    let failed = rankingUser.failed || 0;
+
+    if (matchPoints === 4) {
+      exacts += 1;
+    } else if (matchPoints === 1) {
+      winners += 1;
+    } else {
+      failed += 1;
+    }
+
+    batch.update(rankingRef, {
+      points: (rankingUser.points || 0) + matchPoints,
+      exacts,
+      winners,
+      failed,
+    });
+  }
+
+  await batch.commit();
+
+  const rankingSnapshot = await db.collection("ranking").get();
+
+  const ranking = rankingSnapshot.docs.map((doc) => ({
+    uid: doc.id,
+    ...doc.data(),
+  }));
+
+  ranking.sort((a, b) => b.points - a.points);
+
+  const rankBatch = db.batch();
+
+  ranking.forEach((user, index) => {
+    const ref = db.collection("ranking").doc(user.uid);
+
+    rankBatch.update(ref, {
+      rank: index + 1,
+    });
+  });
+
+  await rankBatch.commit();
+}

@@ -3,7 +3,10 @@ import cors from "cors";
 
 import { getWorldCupMatches } from "./scraper.js";
 import { db } from "./firebase.js";
-import { rebuildRanking } from "./services/rankingService.js";
+import {
+  rebuildRanking,
+  updateRankingForMatch,
+} from "./services/rankingService.js";
 
 const app = express();
 
@@ -166,6 +169,8 @@ app.post("/admin/update-match", async (req, res) => {
       score,
       updatedAt: new Date().toISOString(),
     });
+
+    await updateRankingForMatch(matchId);
 
     res.json({
       success: true,

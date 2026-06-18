@@ -173,3 +173,37 @@ export async function getAllPredictions() {
     return [];
   }
 }
+
+export async function getRanking() {
+  try {
+    const snapshot = await getDocs(collection(db, "ranking"));
+
+    const ranking = snapshot.docs.map((doc) => doc.data());
+
+    ranking.sort((a, b) => a.rank - b.rank);
+
+    return ranking;
+  } catch (error) {
+    console.error("Error obteniendo ranking:", error);
+
+    return [];
+  }
+}
+
+export async function getRankingByUser(userId) {
+  try {
+    const rankingRef = doc(db, "ranking", userId);
+
+    const snapshot = await getDoc(rankingRef);
+
+    if (!snapshot.exists()) {
+      return null;
+    }
+
+    return snapshot.data();
+  } catch (error) {
+    console.error("Error obteniendo ranking usuario:", error);
+
+    return null;
+  }
+}
