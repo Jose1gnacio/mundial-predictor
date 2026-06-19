@@ -106,7 +106,11 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  const loadPredictions = async (userId) => {
+  const loadPredictions = async (userId, forceRefresh = false) => {
+    if (forceRefresh) {
+      localStorage.removeItem(`predictions_${userId}`);
+    }
+
     const userPredictions = await getUserPredictions(userId);
 
     setPredictions(userPredictions);

@@ -10,8 +10,51 @@ import {
 
 import { db } from "../firebase";
 
+function getCache(key) {
+  try {
+    const cached = localStorage.getItem(key);
+
+    if (!cached) return null;
+
+    return JSON.parse(cached);
+  } catch (error) {
+    console.error("Error leyendo cache:", error);
+    return null;
+  }
+}
+
+function setCache(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error("Error guardando cache:", error);
+  }
+}
+
+export function clearMatchesCache() {
+  localStorage.removeItem("matches");
+}
+
+export function clearRankingCache() {
+  localStorage.removeItem("ranking");
+}
+
+export function clearRankingUserCache(userId) {
+  localStorage.removeItem(`ranking_${userId}`);
+}
+
+export function clearPredictionsCache(userId) {
+  localStorage.removeItem(`predictions_${userId}`);
+}
+
 export async function getMatchesFromFirestore() {
   try {
+    const cachedMatches = getCache("matches");
+
+    if (cachedMatches) {
+      return cachedMatches;
+    }
+
     const snapshot = await getDocs(collection(db, "matches"));
 
     const matches = snapshot.docs.map((doc) => doc.data());
@@ -28,6 +71,8 @@ export async function getMatchesFromFirestore() {
 
       return timeA.localeCompare(timeB);
     });
+
+    setCache("matches", matches);
 
     return matches;
   } catch (error) {
@@ -57,6 +102,14 @@ export async function getMatchById(matchId) {
 
 export async function getUserPredictions(userId) {
   try {
+    const cacheKey = `predictions_${userId}`;
+
+    const cachedPredictions = getCache(cacheKey);
+
+    if (cachedPredictions) {
+      return cachedPredictions;
+    }
+
     const predictionsRef = collection(db, "predictions");
 
     const q = query(predictionsRef, where("userId", "==", userId));
@@ -70,6 +123,8 @@ export async function getUserPredictions(userId) {
 
       predictions[data.matchId] = data;
     });
+
+    setCache(cacheKey, predictions);
 
     return predictions;
   } catch (error) {

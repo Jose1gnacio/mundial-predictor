@@ -72,7 +72,7 @@ export default function PredictionDetailPage({ loadPredictions }) {
         awayGoals: Number(awayGoals),
       });
 
-      await loadPredictions(user.uid);
+      await loadPredictions(user.uid, true);
 
       setSavingPrediction(false);
 
