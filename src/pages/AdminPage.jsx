@@ -13,7 +13,7 @@ function AdminPage({ matches, loadData }) {
     const initialScores = {};
 
     matches.forEach((match) => {
-      if (match.score && match.score.includes("-")) {
+      if (match.score && match.score !== "---" && match.score.includes("-")) {
         const [homeGoals, awayGoals] = match.score.split("-");
 
         initialScores[match.id] = {
@@ -170,6 +170,7 @@ function AdminPage({ matches, loadData }) {
                     onChange={(e) =>
                       handleScoreChange(match.id, "homeGoals", e.target.value)
                     }
+                    disabled={match.score !== "---"}
                   />
 
                   <span>-</span>
@@ -181,18 +182,28 @@ function AdminPage({ matches, loadData }) {
                     onChange={(e) =>
                       handleScoreChange(match.id, "awayGoals", e.target.value)
                     }
+                    disabled={match.score !== "---"}
                   />
                 </div>
 
-                <button
-                  className="admin-save-btn"
-                  onClick={() => handleSaveResult(match.id)}
-                  disabled={savingMatchId === match.id}
-                >
-                  {savingMatchId === match.id
-                    ? "Guardando..."
-                    : "Guardar Resultado"}
-                </button>
+                {match.score === "---" ? (
+                  <button
+                    className="admin-save-btn"
+                    onClick={() => handleSaveResult(match.id)}
+                    disabled={savingMatchId === match.id}
+                  >
+                    {savingMatchId === match.id
+                      ? "Guardando..."
+                      : "Guardar Resultado"}
+                  </button>
+                ) : (
+                  <button
+                    className="admin-save-btn admin-save-btn-disabled"
+                    disabled
+                  >
+                    ✅ Resultado Registrado
+                  </button>
+                )}
               </div>
             ))}
           </div>

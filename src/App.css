@@ -2581,3 +2581,152 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* =========================
+   ADMIN PANEL
+========================= */
+
+.admin-card {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.admin-matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-match-card {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 25, 70, 0.95),
+    rgba(5, 15, 45, 0.95)
+  );
+
+  border-radius: 24px;
+
+  padding: 22px;
+
+  border: 2px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,0.30);
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-match-card h3 {
+  text-align: center;
+  font-size: 24px;
+}
+
+.admin-match-card p {
+  text-align: center;
+  opacity: 0.85;
+}
+
+.admin-score-editor {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.admin-score-editor span {
+  font-size: 28px;
+
+  font-weight: bold;
+}
+
+.admin-score-editor input {
+  width: 70px;
+
+  height: 60px;
+
+  border-radius: 12px;
+
+  border: none;
+
+  text-align: center;
+
+  font-size: 28px;
+
+  font-weight: bold;
+
+  background: white;
+
+  color: black;
+}
+
+.admin-save-btn {
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+  background: #22c55e;
+
+  color: white;
+
+  transition: 0.2s;
+}
+
+.admin-save-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  background: #16a34a;
+}
+
+.admin-save-btn:disabled {
+  opacity: 0.85;
+}
+
+.admin-save-btn-disabled {
+  background: #475569;
+
+  cursor: default;
+}
+
+/* =========================
+   MOVIL
+========================= */
+
+@media (max-width: 768px) {
+  .admin-match-card {
+    padding: 16px;
+  }
+
+  .admin-match-card h3 {
+    font-size: 20px;
+  }
+
+  .admin-score-editor input {
+    width: 60px;
+
+    height: 55px;
+
+    font-size: 24px;
+  }
+
+  .admin-save-btn {
+    font-size: 16px;
+
+    padding: 12px;
+  }
+}
