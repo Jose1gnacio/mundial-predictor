@@ -31,6 +31,39 @@ function setCache(key, data) {
   }
 }
 
+export async function validateCacheVersion() {
+  try {
+    const cacheRef = doc(db, "system", "cache");
+
+    const snapshot = await getDoc(cacheRef);
+
+    if (!snapshot.exists()) {
+      return;
+    }
+
+    const firestoreVersion = snapshot.data().version || 1;
+
+    const storedVersion = localStorage.getItem("cacheVersion");
+
+    const localVersion = storedVersion ? Number(storedVersion) : null;
+
+    if (localVersion === null || firestoreVersion !== localVersion) {
+      localStorage.removeItem("matches");
+      localStorage.removeItem("ranking");
+
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("ranking_") || key.startsWith("predictions_")) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      localStorage.setItem("cacheVersion", firestoreVersion.toString());
+    }
+  } catch (error) {
+    console.error("Error validando cache:", error);
+  }
+}
+
 export function clearMatchesCache() {
   localStorage.removeItem("matches");
 }
@@ -231,11 +264,19 @@ export async function getAllPredictions() {
 
 export async function getRanking() {
   try {
+    const cachedRanking = getCache("ranking");
+
+    if (cachedRanking) {
+      return cachedRanking;
+    }
+
     const snapshot = await getDocs(collection(db, "ranking"));
 
     const ranking = snapshot.docs.map((doc) => doc.data());
 
     ranking.sort((a, b) => a.rank - b.rank);
+
+    setCache("ranking", ranking);
 
     return ranking;
   } catch (error) {
@@ -247,6 +288,14 @@ export async function getRanking() {
 
 export async function getRankingByUser(userId) {
   try {
+    const cacheKey = `ranking_${userId}`;
+
+    const cachedRanking = getCache(cacheKey);
+
+    if (cachedRanking) {
+      return cachedRanking;
+    }
+
     const rankingRef = doc(db, "ranking", userId);
 
     const snapshot = await getDoc(rankingRef);
@@ -255,7 +304,11 @@ export async function getRankingByUser(userId) {
       return null;
     }
 
-    return snapshot.data();
+    const data = snapshot.data();
+
+    setCache(cacheKey, data);
+
+    return data;
   } catch (error) {
     console.error("Error obteniendo ranking usuario:", error);
 

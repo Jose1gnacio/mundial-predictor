@@ -18,6 +18,7 @@ import {
   getUserById,
   getRanking,
   getRankingByUser,
+  validateCacheVersion,
 } from "./services/firestoreApi";
 
 import RulesPage from "./pages/RulesPage";
@@ -121,7 +122,13 @@ function App() {
   useEffect(() => {
     if (!user || userStatus !== "approved") return;
 
-    loadData();
+    const initializeApp = async () => {
+      await validateCacheVersion();
+
+      await loadData();
+    };
+
+    initializeApp();
   }, [user, userStatus]);
 
   const loginGoogle = async () => {

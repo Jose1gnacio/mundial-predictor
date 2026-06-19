@@ -172,6 +172,20 @@ app.post("/admin/update-match", async (req, res) => {
 
     await updateRankingForMatch(matchId);
 
+    // 🔥 Incrementar versión global de cache
+    const cacheRef = db.collection("system").doc("cache");
+
+    const cacheDoc = await cacheRef.get();
+
+    const currentVersion = cacheDoc.exists ? cacheDoc.data().version || 1 : 1;
+
+    await cacheRef.set(
+      {
+        version: currentVersion + 1,
+      },
+      { merge: true },
+    );
+
     res.json({
       success: true,
       message: "Resultado actualizado correctamente",

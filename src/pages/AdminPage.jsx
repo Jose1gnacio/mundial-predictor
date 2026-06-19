@@ -87,6 +87,16 @@ function AdminPage({ matches, loadData }) {
         throw new Error(data.error || "Error actualizando resultado");
       }
 
+      // 🔥 Invalidar cache global
+      localStorage.removeItem("matches");
+      localStorage.removeItem("ranking");
+
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("ranking_")) {
+          localStorage.removeItem(key);
+        }
+      });
+
       if (loadData) {
         await loadData();
       }
