@@ -2106,6 +2106,60 @@ body {
   z-index: 1;
 }
 
+/* 
+   expansión trajer clasificación
+ */
+
+.ranking-expandable {
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.ranking-row-expanded {
+  grid-template-columns: 120px 1fr 120px;
+
+  row-gap: 14px;
+}
+
+.ranking-details {
+  grid-column: 1 / -1;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 24px;
+
+  padding-top: 6px;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  color: #ffffff;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 768px) {
+  .ranking-details {
+    gap: 12px;
+
+    font-size: 13px;
+
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .ranking-row-expanded {
+    grid-template-columns: 70px 1fr 80px;
+  }
+}
+
 /* =========================
    REGLAS
 ========================= */
@@ -2703,9 +2757,9 @@ body {
   cursor: default;
 }
 
-/* =========================
+/* 
    MOVIL
-========================= */
+*/
 
 @media (max-width: 768px) {
   .admin-match-card {
