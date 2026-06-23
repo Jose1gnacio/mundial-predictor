@@ -8,6 +8,7 @@ import {
   updateRankingForMatch,
 } from "./services/rankingService.js";
 import { verifyAdmin } from "./middleware/verifyAdmin.js";
+import { verifyUser } from "./middleware/verifyUser.js";
 
 const app = express();
 
@@ -88,9 +89,11 @@ app.get("/sync-matches", async (req, res) => {
 });
 
 // 🔥 guardar predicción
-app.post("/predictions", async (req, res) => {
+app.post("/predictions", verifyUser, async (req, res) => {
   try {
-    const { userId, matchId, homeGoals, awayGoals } = req.body;
+    const { matchId, homeGoals, awayGoals } = req.body;
+
+    const userId = req.user.uid;
 
     const matchDoc = await db.collection("matches").doc(matchId).get();
 
