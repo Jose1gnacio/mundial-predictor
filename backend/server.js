@@ -206,9 +206,21 @@ app.post("/admin/rebuild-ranking", verifyAdmin, async (req, res) => {
   try {
     const totalUsers = await rebuildRanking();
 
+    const cacheRef = db.collection("system").doc("cache");
+
+    const cacheDoc = await cacheRef.get();
+
+    const currentVersion = cacheDoc.exists ? cacheDoc.data().version || 1 : 1;
+
+    await cacheRef.set({
+      version: currentVersion + 1,
+      updatedAt: new Date().toISOString(),
+    });
+
     res.json({
       success: true,
       usersProcessed: totalUsers,
+      cacheVersion: currentVersion + 1,
       message: "Ranking reconstruido correctamente",
     });
   } catch (error) {
