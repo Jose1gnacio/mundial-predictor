@@ -7,6 +7,7 @@ import {
   rebuildRanking,
   updateRankingForMatch,
 } from "./services/rankingService.js";
+import { verifyAdmin } from "./middleware/verifyAdmin.js";
 
 const app = express();
 
@@ -152,7 +153,7 @@ app.post("/predictions", async (req, res) => {
 });
 
 // 🔥 ADMIN - actualizar resultado de partido
-app.post("/admin/update-match", async (req, res) => {
+app.post("/admin/update-match", verifyAdmin, async (req, res) => {
   try {
     const { matchId, homeGoals, awayGoals } = req.body;
 
@@ -201,7 +202,7 @@ app.post("/admin/update-match", async (req, res) => {
 });
 
 // 🔥 ADMIN - reconstruir ranking completo
-app.post("/admin/rebuild-ranking", async (req, res) => {
+app.post("/admin/rebuild-ranking", verifyAdmin, async (req, res) => {
   try {
     const totalUsers = await rebuildRanking();
 

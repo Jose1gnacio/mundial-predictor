@@ -17,4 +17,4 @@ admin.initializeApp({
 // Conexión a Firestore
 const db = admin.firestore();
 
-export { db };
+export { db, admin };

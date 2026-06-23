@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { auth } from "../firebase";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -57,22 +58,23 @@ function AdminPage({ matches, loadData }) {
 
       if (!scoreData) {
         alert("No se encontraron datos para este partido");
-
         return;
       }
 
       if (scoreData.homeGoals === "" || scoreData.awayGoals === "") {
         alert("Debes ingresar ambos marcadores");
-
         return;
       }
 
       setSavingMatchId(matchId);
 
+      const token = await auth.currentUser.getIdToken();
+
       const response = await fetch(`${BASE_URL}/admin/update-match`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           matchId,
@@ -87,7 +89,6 @@ function AdminPage({ matches, loadData }) {
         throw new Error(data.error || "Error actualizando resultado");
       }
 
-      // 🔥 Invalidar cache global
       localStorage.removeItem("matches");
       localStorage.removeItem("ranking");
 
@@ -115,8 +116,13 @@ function AdminPage({ matches, loadData }) {
     try {
       setRebuildingRanking(true);
 
+      const token = await auth.currentUser.getIdToken();
+
       const response = await fetch(`${BASE_URL}/admin/rebuild-ranking`, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
