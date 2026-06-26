@@ -27,34 +27,148 @@ function parseScore(score) {
   };
 }
 
-function calculatePoints(realScore, prediction) {
-  const parsedScore = parseScore(realScore);
-
-  if (!parsedScore || !prediction) {
-    return 0;
+function parsePenalties(penalties) {
+  if (!penalties || penalties === "---" || penalties === "-") {
+    return null;
   }
 
-  const { homeGoals: realHomeGoals, awayGoals: realAwayGoals } = parsedScore;
+  const [homePenalties, awayPenalties] = penalties
+    .split("-")
+    .map((goal) => Number(goal.trim()));
+
+  return {
+    homePenalties,
+    awayPenalties,
+  };
+}
+
+function calculatePoints(match, prediction) {
+  const parsedScore = parseScore(match.score);
+
+  if (!parsedScore || !prediction) {
+    return {
+      points: 0,
+      exact: false,
+      winner: false,
+    };
+  }
+
+  const realHomeGoals = parsedScore.homeGoals;
+  const realAwayGoals = parsedScore.awayGoals;
 
   const predictedHomeGoals = prediction.homeGoals;
   const predictedAwayGoals = prediction.awayGoals;
 
-  if (
-    realHomeGoals === predictedHomeGoals &&
-    realAwayGoals === predictedAwayGoals
-  ) {
-    return 4;
-  }
-
   const realWinner = getWinner(realHomeGoals, realAwayGoals);
-
   const predictedWinner = getWinner(predictedHomeGoals, predictedAwayGoals);
 
-  if (realWinner === predictedWinner) {
-    return 1;
+  // ===== FASE DE GRUPOS =====
+
+  if (!match.allowPenalties) {
+    if (
+      realHomeGoals === predictedHomeGoals &&
+      realAwayGoals === predictedAwayGoals
+    ) {
+      return {
+        points: 4,
+        exact: true,
+        winner: true,
+      };
+    }
+
+    if (realWinner === predictedWinner) {
+      return {
+        points: 1,
+        exact: false,
+        winner: true,
+      };
+    }
+
+    return {
+      points: 0,
+      exact: false,
+      winner: false,
+    };
   }
 
-  return 0;
+  // ===== FASE FINAL =====
+
+  let points = 0;
+
+  const exact =
+    realHomeGoals === predictedHomeGoals &&
+    realAwayGoals === predictedAwayGoals;
+
+  // Si el partido terminó empatado
+
+  if (realWinner === "DRAW") {
+    if (predictedWinner === "DRAW") {
+      points += 1;
+
+      if (exact) {
+        points += 3;
+      }
+
+      const realPenalties = parsePenalties(match.penalties);
+
+      if (
+        realPenalties &&
+        prediction.homePenalties !== undefined &&
+        prediction.awayPenalties !== undefined
+      ) {
+        const realPenaltyWinner = getWinner(
+          realPenalties.homePenalties,
+          realPenalties.awayPenalties,
+        );
+
+        const predictedPenaltyWinner = getWinner(
+          prediction.homePenalties,
+          prediction.awayPenalties,
+        );
+
+        if (realPenaltyWinner === predictedPenaltyWinner) {
+          points += 1;
+        }
+
+        if (
+          realPenalties.homePenalties === prediction.homePenalties &&
+          realPenalties.awayPenalties === prediction.awayPenalties
+        ) {
+          points += 1;
+        }
+      }
+    }
+
+    return {
+      points,
+      exact,
+      winner: predictedWinner === "DRAW",
+    };
+  }
+
+  // Partido NO terminó empatado
+
+  if (exact) {
+    return {
+      points: 4,
+      exact: true,
+      winner: true,
+    };
+  }
+
+  if (realWinner === predictedWinner) {
+    return {
+      points: 1,
+      exact: false,
+      winner: true,
+    };
+  }
+
+  return {
+    points: 0,
+    exact: false,
+    winner: false,
+  };
 }
 
 export async function rebuildRanking() {
@@ -101,19 +215,17 @@ export async function rebuildRanking() {
         return;
       }
 
-      const matchPoints = calculatePoints(match.score, prediction);
+      const matchResult = calculatePoints(match, prediction);
 
-      points += matchPoints;
+      points += matchResult.points;
 
-      if (matchPoints === 4) {
+      if (matchResult.exact) {
         exacts++;
-
         return;
       }
 
-      if (matchPoints === 1) {
+      if (matchResult.winner) {
         winners++;
-
         return;
       }
 
@@ -184,22 +296,22 @@ export async function updateRankingForMatch(matchId) {
 
     const rankingUser = rankingDoc.data();
 
-    const matchPoints = calculatePoints(match.score, prediction);
+    const matchResult = calculatePoints(match, prediction);
 
     let exacts = rankingUser.exacts || 0;
     let winners = rankingUser.winners || 0;
     let failed = rankingUser.failed || 0;
 
-    if (matchPoints === 4) {
+    if (matchResult.exact) {
       exacts += 1;
-    } else if (matchPoints === 1) {
+    } else if (matchResult.winner) {
       winners += 1;
     } else {
       failed += 1;
     }
 
     batch.update(rankingRef, {
-      points: (rankingUser.points || 0) + matchPoints,
+      points: (rankingUser.points || 0) + matchResult.points,
       exacts,
       winners,
       failed,

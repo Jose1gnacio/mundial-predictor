@@ -270,6 +270,39 @@ function AdminPage({ matches, loadData }) {
     }
   };
 
+  const handlePopulateQualified = async () => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/populate-qualified`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+
+      localStorage.removeItem("matches");
+
+      if (loadData) {
+        await loadData();
+      }
+
+      alert("Clasificados actualizados correctamente.");
+    } catch (error) {
+      console.error(error);
+      alert("Error actualizando clasificados.");
+    }
+  };
+
   return (
     <>
       <h1 className="page-title">Panel de Administración</h1>
@@ -315,6 +348,22 @@ function AdminPage({ matches, loadData }) {
             {rebuildingRanking
               ? "Reconstruyendo Ranking..."
               : "Reconstruir Ranking"}
+          </button>
+
+          <button
+            className="admin-save-btn"
+            style={{ marginTop: "15px" }}
+            onClick={() => {
+              const confirmed = window.confirm(
+                "¿Actualizar automáticamente los equipos clasificados?",
+              );
+
+              if (confirmed) {
+                handlePopulateQualified();
+              }
+            }}
+          >
+            Actualizar Clasificados
           </button>
         </div>
       )}

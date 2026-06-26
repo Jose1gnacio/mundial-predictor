@@ -1,4 +1,4 @@
-import { worldCupGroups } from "../../shared/worldCupGroups.js";
+import { worldCupGroups } from "./worldCupGroups.js";
 
 export function buildGroupStandings(matches) {
   const groups = {};

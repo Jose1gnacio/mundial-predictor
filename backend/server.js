@@ -10,6 +10,7 @@ import {
 import { verifyAdmin } from "./middleware/verifyAdmin.js";
 import { verifyUser } from "./middleware/verifyUser.js";
 import { advanceWinner } from "./services/knockoutService.js";
+import { populateQualifiedTeams } from "./services/populateQualifiedTeams.js";
 
 const app = express();
 
@@ -257,6 +258,25 @@ app.post("/admin/rebuild-ranking", verifyAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Error reconstruyendo ranking",
+    });
+  }
+});
+
+// 🔥 ADMIN - actualizar clasificados
+app.post("/admin/populate-qualified", verifyAdmin, async (req, res) => {
+  try {
+    await populateQualifiedTeams();
+
+    res.json({
+      success: true,
+      message: "Clasificados actualizados correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: "Error actualizando clasificados",
     });
   }
 });
