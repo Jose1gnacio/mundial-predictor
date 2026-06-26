@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import { getWorldCupMatches } from "./scraper.js";
-import { db } from "./firebase.js";
+import { admin, db } from "./firebase.js";
 import {
   rebuildRanking,
   updateRankingForMatch,
@@ -152,6 +152,17 @@ app.post("/predictions", verifyUser, async (req, res) => {
       .collection("predictions")
       .doc(predictionId)
       .set(predictionData, { merge: true });
+
+    // 🔥 Incrementar versión del caché de predicciones
+    await db
+      .collection("system")
+      .doc("cache")
+      .set(
+        {
+          predictionVersion: admin.firestore.FieldValue.increment(1),
+        },
+        { merge: true },
+      );
 
     res.json({
       success: true,

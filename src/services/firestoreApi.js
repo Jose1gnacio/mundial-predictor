@@ -42,22 +42,39 @@ export async function validateCacheVersion() {
     }
 
     const firestoreVersion = snapshot.data().version || 1;
+    const firestorePredictionVersion = snapshot.data().predictionVersion || 1;
 
-    const storedVersion = localStorage.getItem("cacheVersion");
+    const localVersion = Number(localStorage.getItem("cacheVersion") || 0);
+    const localPredictionVersion = Number(
+      localStorage.getItem("predictionVersion") || 0,
+    );
 
-    const localVersion = storedVersion ? Number(storedVersion) : null;
-
-    if (localVersion === null || firestoreVersion !== localVersion) {
+    // Cache general (matches + ranking)
+    if (firestoreVersion !== localVersion) {
       localStorage.removeItem("matches");
       localStorage.removeItem("ranking");
 
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("ranking_") || key.startsWith("predictions_")) {
+        if (key.startsWith("ranking_")) {
           localStorage.removeItem(key);
         }
       });
 
       localStorage.setItem("cacheVersion", firestoreVersion.toString());
+    }
+
+    // Cache de predicciones
+    if (firestorePredictionVersion !== localPredictionVersion) {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("predictions_")) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      localStorage.setItem(
+        "predictionVersion",
+        firestorePredictionVersion.toString(),
+      );
     }
   } catch (error) {
     console.error("Error validando cache:", error);
