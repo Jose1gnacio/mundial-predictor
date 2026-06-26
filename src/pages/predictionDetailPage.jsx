@@ -85,14 +85,6 @@ export default function PredictionDetailPage({ loadPredictions }) {
 
       setSavingPrediction(true);
 
-      console.log({
-        matchId: match.id,
-        homeGoals,
-        awayGoals,
-        homePenalties,
-        awayPenalties,
-      });
-
       await savePrediction({
         userId: user.uid,
         matchId: match.id,

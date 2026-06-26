@@ -95,8 +95,6 @@ app.post("/predictions", verifyUser, async (req, res) => {
     const { matchId, homeGoals, awayGoals, homePenalties, awayPenalties } =
       req.body;
 
-    console.log("BODY RECIBIDO:", req.body);
-
     const userId = req.user.uid;
 
     const matchDoc = await db.collection("matches").doc(matchId).get();
@@ -133,28 +131,26 @@ app.post("/predictions", verifyUser, async (req, res) => {
 
     const predictionId = `${userId}_${matchId}`;
 
-    console.log({
+    const predictionData = {
+      userId,
+      matchId,
       homeGoals,
       awayGoals,
-      homePenalties,
-      awayPenalties,
-    });
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (homePenalties !== undefined) {
+      predictionData.homePenalties = homePenalties;
+    }
+
+    if (awayPenalties !== undefined) {
+      predictionData.awayPenalties = awayPenalties;
+    }
 
     await db
       .collection("predictions")
       .doc(predictionId)
-      .set(
-        {
-          userId,
-          matchId,
-          homeGoals,
-          awayGoals,
-          homePenalties: homePenalties === null ? null : homePenalties,
-          awayPenalties: awayPenalties === null ? null : awayPenalties,
-          updatedAt: new Date().toISOString(),
-        },
-        { merge: true },
-      );
+      .set(predictionData, { merge: true });
 
     res.json({
       success: true,
