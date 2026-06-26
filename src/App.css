@@ -1125,6 +1125,18 @@ body {
   font-weight:700;
 }
 
+.prediction-penalties {
+  margin-top: 8px;
+  margin-bottom: 4px;
+
+  text-align: center;
+
+  font-size: 27px;
+  font-weight: 700;
+
+  color: #ffd54f;
+}
+
 /* =========================
    DETALLE PREDICCIÓN
 ========================= */

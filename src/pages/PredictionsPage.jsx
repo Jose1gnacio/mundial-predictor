@@ -51,6 +51,14 @@ export default function PredictionsPage({ matches, predictions, loading }) {
 
     const awayGoals = predicted ? prediction.awayGoals : "-";
 
+    const showPenalties =
+      match.allowPenalties &&
+      prediction &&
+      prediction.homePenalties !== undefined &&
+      prediction.homePenalties !== null &&
+      prediction.awayPenalties !== undefined &&
+      prediction.awayPenalties !== null;
+
     const matchHour = match.time?.split(" ")[1] || match.time;
 
     return (
@@ -86,6 +94,12 @@ export default function PredictionsPage({ matches, predictions, loading }) {
 
           <div className="match-score">{awayGoals}</div>
         </div>
+
+        {showPenalties && (
+          <p className="prediction-penalties">
+            ⚽ Penales: {prediction.homePenalties} - {prediction.awayPenalties}
+          </p>
+        )}
 
         <p className="prediction-date">🕗 {matchHour}</p>
 

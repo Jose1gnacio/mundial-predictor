@@ -57,6 +57,18 @@ export default function PredictionDetailPage({ loadPredictions }) {
     loadData();
   }, [id]);
 
+  useEffect(() => {
+    if (
+      match?.allowPenalties &&
+      homeGoals !== "" &&
+      awayGoals !== "" &&
+      Number(homeGoals) !== Number(awayGoals)
+    ) {
+      setHomePenalties("");
+      setAwayPenalties("");
+    }
+  }, [homeGoals, awayGoals, match]);
+
   const handleSavePrediction = async () => {
     try {
       const user = auth.currentUser;
@@ -83,6 +95,16 @@ export default function PredictionDetailPage({ loadPredictions }) {
         }
       }
 
+      const finalHomePenalties =
+        match.allowPenalties && Number(homeGoals) === Number(awayGoals)
+          ? Number(homePenalties)
+          : null;
+
+      const finalAwayPenalties =
+        match.allowPenalties && Number(homeGoals) === Number(awayGoals)
+          ? Number(awayPenalties)
+          : null;
+
       setSavingPrediction(true);
 
       await savePrediction({
@@ -91,9 +113,8 @@ export default function PredictionDetailPage({ loadPredictions }) {
         homeGoals: Number(homeGoals),
         awayGoals: Number(awayGoals),
 
-        homePenalties: homePenalties === "" ? null : Number(homePenalties),
-
-        awayPenalties: awayPenalties === "" ? null : Number(awayPenalties),
+        homePenalties: finalHomePenalties,
+        awayPenalties: finalAwayPenalties,
       });
 
       await loadPredictions(user.uid, true);
