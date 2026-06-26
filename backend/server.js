@@ -9,6 +9,7 @@ import {
 } from "./services/rankingService.js";
 import { verifyAdmin } from "./middleware/verifyAdmin.js";
 import { verifyUser } from "./middleware/verifyUser.js";
+import { advanceWinner } from "./services/knockoutService.js";
 
 const app = express();
 
@@ -91,7 +92,10 @@ app.get("/sync-matches", async (req, res) => {
 // 🔥 guardar predicción
 app.post("/predictions", verifyUser, async (req, res) => {
   try {
-    const { matchId, homeGoals, awayGoals } = req.body;
+    const { matchId, homeGoals, awayGoals, homePenalties, awayPenalties } =
+      req.body;
+
+    console.log("BODY RECIBIDO:", req.body);
 
     const userId = req.user.uid;
 
@@ -129,16 +133,28 @@ app.post("/predictions", verifyUser, async (req, res) => {
 
     const predictionId = `${userId}_${matchId}`;
 
-    await db.collection("predictions").doc(predictionId).set(
-      {
-        userId,
-        matchId,
-        homeGoals,
-        awayGoals,
-        updatedAt: new Date().toISOString(),
-      },
-      { merge: true },
-    );
+    console.log({
+      homeGoals,
+      awayGoals,
+      homePenalties,
+      awayPenalties,
+    });
+
+    await db
+      .collection("predictions")
+      .doc(predictionId)
+      .set(
+        {
+          userId,
+          matchId,
+          homeGoals,
+          awayGoals,
+          homePenalties: homePenalties === null ? null : homePenalties,
+          awayPenalties: awayPenalties === null ? null : awayPenalties,
+          updatedAt: new Date().toISOString(),
+        },
+        { merge: true },
+      );
 
     res.json({
       success: true,
@@ -158,7 +174,8 @@ app.post("/predictions", verifyUser, async (req, res) => {
 // 🔥 ADMIN - actualizar resultado de partido
 app.post("/admin/update-match", verifyAdmin, async (req, res) => {
   try {
-    const { matchId, homeGoals, awayGoals } = req.body;
+    const { matchId, homeGoals, awayGoals, homePenalties, awayPenalties } =
+      req.body;
 
     if (!matchId || homeGoals === undefined || awayGoals === undefined) {
       return res.status(400).json({
@@ -169,12 +186,24 @@ app.post("/admin/update-match", verifyAdmin, async (req, res) => {
 
     const score = `${homeGoals}-${awayGoals}`;
 
+    let penalties = "---";
+
+    if (
+      homePenalties !== null &&
+      awayPenalties !== null &&
+      homeGoals === awayGoals
+    ) {
+      penalties = `${homePenalties}-${awayPenalties}`;
+    }
+
     await db.collection("matches").doc(matchId).update({
       score,
+      penalties,
       updatedAt: new Date().toISOString(),
     });
 
     await updateRankingForMatch(matchId);
+    await advanceWinner(matchId);
 
     // 🔥 Incrementar versión global de cache
     const cacheRef = db.collection("system").doc("cache");

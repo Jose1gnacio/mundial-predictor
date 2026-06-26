@@ -34,14 +34,25 @@ function AdminPage({ matches, loadData }) {
       if (match.score && match.score !== "---" && match.score.includes("-")) {
         const [homeGoals, awayGoals] = match.score.split("-");
 
+        let homePenalties = "";
+        let awayPenalties = "";
+
+        if (match.penalties && match.penalties !== "---") {
+          [homePenalties, awayPenalties] = match.penalties.split("-");
+        }
+
         initialScores[match.id] = {
           homeGoals,
           awayGoals,
+          homePenalties,
+          awayPenalties,
         };
       } else {
         initialScores[match.id] = {
           homeGoals: "",
           awayGoals: "",
+          homePenalties: "",
+          awayPenalties: "",
         };
       }
     });
@@ -151,6 +162,23 @@ function AdminPage({ matches, loadData }) {
         return;
       }
 
+      const match = matches.find((m) => m.id === matchId);
+
+      if (
+        match?.allowPenalties &&
+        scoreData.homeGoals === scoreData.awayGoals
+      ) {
+        if (scoreData.homePenalties === "" || scoreData.awayPenalties === "") {
+          alert("Debes ingresar el resultado de los penales");
+          return;
+        }
+
+        if (scoreData.homePenalties === scoreData.awayPenalties) {
+          alert("Los penales no pueden terminar empatados");
+          return;
+        }
+      }
+
       setSavingMatchId(matchId);
 
       const token = await auth.currentUser.getIdToken();
@@ -165,6 +193,16 @@ function AdminPage({ matches, loadData }) {
           matchId,
           homeGoals: Number(scoreData.homeGoals),
           awayGoals: Number(scoreData.awayGoals),
+
+          homePenalties:
+            scoreData.homePenalties === ""
+              ? null
+              : Number(scoreData.homePenalties),
+
+          awayPenalties:
+            scoreData.awayPenalties === ""
+              ? null
+              : Number(scoreData.awayPenalties),
         }),
       });
 
@@ -328,6 +366,47 @@ function AdminPage({ matches, loadData }) {
                         disabled={match.score !== "---"}
                       />
                     </div>
+
+                    {match.allowPenalties &&
+                      scores[match.id]?.homeGoals !== "" &&
+                      scores[match.id]?.homeGoals ===
+                        scores[match.id]?.awayGoals && (
+                        <>
+                          <p className="admin-penalties-title">Penales</p>
+
+                          <div className="admin-score-editor">
+                            <input
+                              type="number"
+                              min="0"
+                              value={scores[match.id]?.homePenalties ?? ""}
+                              onChange={(e) =>
+                                handleScoreChange(
+                                  match.id,
+                                  "homePenalties",
+                                  e.target.value,
+                                )
+                              }
+                              disabled={match.score !== "---"}
+                            />
+
+                            <span>-</span>
+
+                            <input
+                              type="number"
+                              min="0"
+                              value={scores[match.id]?.awayPenalties ?? ""}
+                              onChange={(e) =>
+                                handleScoreChange(
+                                  match.id,
+                                  "awayPenalties",
+                                  e.target.value,
+                                )
+                              }
+                              disabled={match.score !== "---"}
+                            />
+                          </div>
+                        </>
+                      )}
 
                     {match.score === "---" ? (
                       <button

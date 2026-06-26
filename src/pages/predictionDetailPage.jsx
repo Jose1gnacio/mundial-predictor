@@ -21,6 +21,10 @@ export default function PredictionDetailPage({ loadPredictions }) {
 
   const [awayGoals, setAwayGoals] = useState("");
 
+  const [homePenalties, setHomePenalties] = useState("");
+
+  const [awayPenalties, setAwayPenalties] = useState("");
+
   const [predictionExists, setPredictionExists] = useState(false);
 
   const [savingPrediction, setSavingPrediction] = useState(false);
@@ -39,6 +43,10 @@ export default function PredictionDetailPage({ loadPredictions }) {
         if (prediction) {
           setHomeGoals(prediction.homeGoals);
           setAwayGoals(prediction.awayGoals);
+
+          setHomePenalties(prediction.homePenalties ?? "");
+          setAwayPenalties(prediction.awayPenalties ?? "");
+
           setPredictionExists(true);
         }
       }
@@ -63,13 +71,37 @@ export default function PredictionDetailPage({ loadPredictions }) {
         return;
       }
 
+      if (match.allowPenalties && Number(homeGoals) === Number(awayGoals)) {
+        if (homePenalties === "" || awayPenalties === "") {
+          alert("Debes ingresar los penales");
+          return;
+        }
+
+        if (Number(homePenalties) === Number(awayPenalties)) {
+          alert("Los penales no pueden terminar empatados");
+          return;
+        }
+      }
+
       setSavingPrediction(true);
+
+      console.log({
+        matchId: match.id,
+        homeGoals,
+        awayGoals,
+        homePenalties,
+        awayPenalties,
+      });
 
       await savePrediction({
         userId: user.uid,
         matchId: match.id,
         homeGoals: Number(homeGoals),
         awayGoals: Number(awayGoals),
+
+        homePenalties: homePenalties === "" ? null : Number(homePenalties),
+
+        awayPenalties: awayPenalties === "" ? null : Number(awayPenalties),
       });
 
       await loadPredictions(user.uid, true);
@@ -170,6 +202,57 @@ export default function PredictionDetailPage({ loadPredictions }) {
             onChange={(e) => setAwayGoals(e.target.value)}
           />
         </div>
+
+        {match.allowPenalties &&
+          homeGoals !== "" &&
+          awayGoals !== "" &&
+          Number(homeGoals) === Number(awayGoals) && (
+            <>
+              <h3 className="penalties-title">⚽ Penales</h3>
+
+              <div className="match-row">
+                <div className="team-line">
+                  <ReactCountryFlag
+                    countryCode={countryCodes[match.home]}
+                    svg
+                    className="prediction-flag"
+                  />
+
+                  <span>{match.home}</span>
+                </div>
+
+                <input
+                  type="number"
+                  min="0"
+                  className="goal-input"
+                  value={homePenalties}
+                  disabled={predictionClosed}
+                  onChange={(e) => setHomePenalties(e.target.value)}
+                />
+              </div>
+
+              <div className="match-row">
+                <div className="team-line">
+                  <ReactCountryFlag
+                    countryCode={countryCodes[match.away]}
+                    svg
+                    className="prediction-flag"
+                  />
+
+                  <span>{match.away}</span>
+                </div>
+
+                <input
+                  type="number"
+                  min="0"
+                  className="goal-input"
+                  value={awayPenalties}
+                  disabled={predictionClosed}
+                  onChange={(e) => setAwayPenalties(e.target.value)}
+                />
+              </div>
+            </>
+          )}
 
         <p className="prediction-date">
           📅 {formatDateTitle(match.matchDate)}

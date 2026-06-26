@@ -1116,6 +1116,15 @@ body {
   border-radius: 15px;  
 }
 
+/* penales */
+
+.penalties-title{
+  margin:20px 0 10px;
+  text-align:center;
+  font-size:1rem;
+  font-weight:700;
+}
+
 /* =========================
    DETALLE PREDICCIÓN
 ========================= */
@@ -2908,4 +2917,12 @@ body {
   color: white;
 
   margin-bottom: 10px;
+}
+
+.admin-penalties-title{
+    margin-top:15px;
+    margin-bottom:8px;
+    text-align:center;
+    font-weight:700;
+    color:#ffffff;
 }
