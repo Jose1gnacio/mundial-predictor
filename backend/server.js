@@ -11,6 +11,7 @@ import { verifyAdmin } from "./middleware/verifyAdmin.js";
 import { verifyUser } from "./middleware/verifyUser.js";
 import { advanceWinner } from "./services/knockoutService.js";
 import { populateQualifiedTeams } from "./services/populateQualifiedTeams.js";
+import specialPredictionsRoutes from "./routes/specialPredictions.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(cors());
 
 // 🔥 permitir recibir JSON
 app.use(express.json());
+app.use("/", specialPredictionsRoutes);
 
 // 🌎 Mundial 2026
 const MATCHES_URL =

@@ -181,6 +181,23 @@ export async function rebuildRanking() {
 
   const predictionsSnapshot = await db.collection("predictions").get();
 
+  const specialPredictionsSnapshot = await db
+    .collection("specialPredictions")
+    .get();
+
+  const specialResultsDoc = await db
+    .collection("specialResults")
+    .doc("worldCup2026")
+    .get();
+
+  const specialPredictions = specialPredictionsSnapshot.docs.map((doc) =>
+    doc.data(),
+  );
+
+  const specialResults = specialResultsDoc.exists
+    ? specialResultsDoc.data()
+    : null;
+
   const users = approvedUsersSnapshot.docs.map((doc) => doc.data());
 
   const matches = matchesSnapshot.docs.map((doc) => doc.data());
@@ -194,11 +211,16 @@ export async function rebuildRanking() {
       (prediction) => prediction.userId === user.uid,
     );
 
+    const specialPrediction = specialPredictions.find(
+      (prediction) => prediction.userId === user.uid,
+    );
+
     let points = 0;
     let exacts = 0;
     let winners = 0;
     let failed = 0;
     let missing = 0;
+    let specialPoints = 0;
 
     matches.forEach((match) => {
       const prediction = userPredictions.find((p) => p.matchId === match.id);
@@ -232,10 +254,35 @@ export async function rebuildRanking() {
       failed++;
     });
 
+    // ------------------ PUNTOS ESPECIALES ------------------
+
+    if (specialPrediction && specialResults) {
+      if (
+        specialPrediction.finalist1 === specialResults.finalist1 ||
+        specialPrediction.finalist1 === specialResults.finalist2
+      ) {
+        specialPoints += 5;
+      }
+
+      if (
+        specialPrediction.finalist2 === specialResults.finalist1 ||
+        specialPrediction.finalist2 === specialResults.finalist2
+      ) {
+        specialPoints += 5;
+      }
+
+      if (specialPrediction.champion === specialResults.champion) {
+        specialPoints += 10;
+      }
+
+      points += specialPoints;
+    }
+
     ranking.push({
       uid: user.uid,
       displayName: user.displayName,
       points,
+      specialPoints,
       exacts,
       winners,
       failed,

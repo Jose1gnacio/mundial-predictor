@@ -9,8 +9,8 @@ import {
   FaBullseye,
   FaFutbol,
   FaMedal,
+  FaStar,
 } from "react-icons/fa";
-
 import {
   getMatchesFromFirestore,
   getUserPredictions,
@@ -20,7 +20,6 @@ import {
   getRankingByUser,
   validateCacheVersion,
 } from "./services/firestoreApi";
-
 import RulesPage from "./pages/RulesPage";
 import MatchesPage from "./pages/MatchesPage";
 import PredictionsPage from "./pages/PredictionsPage";
@@ -29,6 +28,7 @@ import RankingPage from "./pages/RankingPage";
 import PredictionDetailPage from "./pages/PredictionDetailPage";
 import UpcomingMatchesCarousel from "./components/UpcomingMatchesCarousel";
 import AdminPage from "./pages/AdminPage";
+import SpecialPredictionsPage from "./pages/SpecialPredictionsPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -322,6 +322,16 @@ function App() {
           </NavLink>
 
           <NavLink
+            to="/special-predictions"
+            className={({ isActive }) =>
+              isActive ? "tab-link active-tab" : "tab-link"
+            }
+          >
+            <FaStar className="tab-icon predictions-icon" /> Prediciones
+            Especiales
+          </NavLink>
+
+          <NavLink
             to="/results"
             className={({ isActive }) =>
               isActive ? "tab-link active-tab" : "tab-link"
@@ -367,6 +377,11 @@ function App() {
               element={
                 <PredictionDetailPage loadPredictions={loadPredictions} />
               }
+            />
+
+            <Route
+              path="/special-predictions"
+              element={<SpecialPredictionsPage />}
             />
 
             <Route

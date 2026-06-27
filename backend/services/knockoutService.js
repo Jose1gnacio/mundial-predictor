@@ -1,4 +1,5 @@
 import { db } from "../firebase.js";
+import { updateSpecialResults } from "./specialResultsService.js";
 
 function getWinner(score, penalties) {
   const [homeGoals, awayGoals] = score.split("-").map(Number);
@@ -82,4 +83,5 @@ export async function advanceWinner(matchId) {
       away: loserTeam,
     });
   }
+  await updateSpecialResults();
 }
