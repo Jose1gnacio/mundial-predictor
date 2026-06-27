@@ -20,6 +20,8 @@ export default function SpecialPredictionsPage() {
 
   const [champion, setChampion] = useState("");
 
+  const [predictionExists, setPredictionExists] = useState(false);
+
   useEffect(() => {
     loadPrediction();
   }, []);
@@ -34,6 +36,8 @@ export default function SpecialPredictionsPage() {
         setFinalist2(prediction.finalist2);
 
         setChampion(prediction.champion);
+
+        setPredictionExists(true);
       }
     } catch (error) {
       console.error(error);
@@ -43,16 +47,18 @@ export default function SpecialPredictionsPage() {
   }
 
   async function handleSave() {
+    if (saving) {
+      return;
+    }
+
     try {
       if (!finalist1 || !finalist2 || !champion) {
         alert("Debes completar todas las selecciones");
-
         return;
       }
 
       if (finalist1 === finalist2) {
         alert("Los dos finalistas deben ser diferentes");
-
         return;
       }
 
@@ -64,35 +70,56 @@ export default function SpecialPredictionsPage() {
         champion,
       });
 
-      alert("Pronóstico especial guardado correctamente");
+      setPredictionExists(true);
+
+      alert(
+        predictionExists
+          ? "Pronóstico especial actualizado correctamente"
+          : "Pronóstico especial guardado correctamente",
+      );
     } catch (error) {
       console.error(error);
 
       alert(error.message);
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   }
 
   if (loading) {
     return <p>Cargando...</p>;
   }
 
+  const limitDate = new Date("2026-07-02T23:59:59-04:00");
+
+  const nowChile = new Date(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/Santiago",
+    }),
+  );
+
+  const predictionClosed = nowChile > limitDate;
+
   return (
     <div className="prediction-detail">
-      <div className="prediction-detail-card">
-        <h2 style={{ textAlign: "center" }}>🏆 Pronósticos Especiales</h2>
+      {saving && (
+        <div className="saving-overlay">
+          <div className="saving-modal">
+            <div className="saving-spinner"></div>
 
-        <div
-          style={{
-            background: "rgba(255,255,255,0.08)",
-            padding: "18px",
-            borderRadius: "16px",
-            marginBottom: "25px",
-            textAlign: "center",
-            lineHeight: "1.7",
-          }}
-        >
+            <h3>Guardando predicción...</h3>
+
+            <p>
+              Esto puede tardar unos segundos mientras se conecta el servidor.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className="prediction-detail-card predicted">
+        <h2 className="special-title">🏆 Pronósticos Especiales</h2>
+
+        <div className="special-info-card">
           <p>
             🎯 <strong>Finalista 1:</strong> 5 puntos
           </p>
@@ -110,9 +137,22 @@ export default function SpecialPredictionsPage() {
           plazo.
         </div>
 
+        <p
+          className={
+            predictionClosed
+              ? "special-deadline closed"
+              : "special-deadline open"
+          }
+        >
+          {predictionClosed
+            ? "🔒 El plazo para realizar este pronóstico ya terminó."
+            : "⏳ Puedes modificar tu elección hasta el 02 de julio a las 23:59 hrs."}
+        </p>
+
         <h3>Finalista 1</h3>
 
         <select
+          disabled={predictionClosed}
           value={finalist1}
           onChange={(e) => setFinalist1(e.target.value)}
           className="admin-select"
@@ -131,6 +171,7 @@ export default function SpecialPredictionsPage() {
         <h3>Finalista 2</h3>
 
         <select
+          disabled={predictionClosed}
           value={finalist2}
           onChange={(e) => setFinalist2(e.target.value)}
           className="admin-select"
@@ -149,6 +190,7 @@ export default function SpecialPredictionsPage() {
         <h3>Campeón</h3>
 
         <select
+          disabled={predictionClosed}
           value={champion}
           onChange={(e) => setChampion(e.target.value)}
           className="admin-select"
@@ -166,10 +208,16 @@ export default function SpecialPredictionsPage() {
 
         <button
           className="save-prediction-btn"
-          disabled={saving}
+          disabled={saving || predictionClosed}
           onClick={handleSave}
         >
-          {saving ? "Guardando..." : "Guardar Pronóstico"}
+          {predictionClosed
+            ? "Pronósticos Cerrados"
+            : saving
+              ? "Guardando..."
+              : predictionExists
+                ? "Actualizar Pronóstico"
+                : "Guardar Pronóstico"}
         </button>
       </div>
     </div>
