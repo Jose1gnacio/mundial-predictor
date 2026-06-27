@@ -159,11 +159,13 @@ export default function SpecialPredictionsPage() {
         >
           <option value="">Selecciona un país</option>
 
-          {countries.map((country) => (
-            <option key={country} value={country}>
-              {country}
-            </option>
-          ))}
+          {countries
+            .filter((country) => country !== finalist2)
+            .map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
         </select>
 
         <br />
@@ -178,11 +180,13 @@ export default function SpecialPredictionsPage() {
         >
           <option value="">Selecciona un país</option>
 
-          {countries.map((country) => (
-            <option key={country} value={country}>
-              {country}
-            </option>
-          ))}
+          {countries
+            .filter((country) => country !== finalist1)
+            .map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
         </select>
 
         <br />
