@@ -102,6 +102,13 @@ function calculatePoints(match, prediction) {
   // Si el partido terminó empatado
 
   if (realWinner === "DRAW") {
+    const realPenalties = parsePenalties(match.penalties);
+
+    const realPenaltyWinner = realPenalties
+      ? getWinner(realPenalties.homePenalties, realPenalties.awayPenalties)
+      : null;
+
+    // Caso 1: el usuario predijo empate
     if (predictedWinner === "DRAW") {
       points += 1;
 
@@ -109,18 +116,11 @@ function calculatePoints(match, prediction) {
         points += 3;
       }
 
-      const realPenalties = parsePenalties(match.penalties);
-
       if (
         realPenalties &&
         prediction.homePenalties !== undefined &&
         prediction.awayPenalties !== undefined
       ) {
-        const realPenaltyWinner = getWinner(
-          realPenalties.homePenalties,
-          realPenalties.awayPenalties,
-        );
-
         const predictedPenaltyWinner = getWinner(
           prediction.homePenalties,
           prediction.awayPenalties,
@@ -137,12 +137,29 @@ function calculatePoints(match, prediction) {
           points += 1;
         }
       }
+
+      return {
+        points,
+        exact,
+        winner: true,
+      };
+    }
+
+    // Caso 2: NO predijo empate,
+    // pero acertó el equipo que finalmente clasificó por penales
+
+    if (realPenaltyWinner && predictedWinner === realPenaltyWinner) {
+      return {
+        points: 1,
+        exact: false,
+        winner: true,
+      };
     }
 
     return {
-      points,
-      exact,
-      winner: predictedWinner === "DRAW",
+      points: 0,
+      exact: false,
+      winner: false,
     };
   }
 
