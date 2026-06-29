@@ -1,6 +1,6 @@
 import { db } from "../firebase.js";
 import { updateSpecialPoints } from "./updateSpecialPointsService.js";
-import { updateSpecialResults } from "./specialResultService.js";
+import { updateSpecialResults } from "./specialResultsService.js";
 
 function getWinner(homeGoals, awayGoals) {
   if (homeGoals > awayGoals) {
