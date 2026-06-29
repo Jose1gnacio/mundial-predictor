@@ -432,7 +432,15 @@ export async function auditUser(userId) {
     .doc("worldCup2026")
     .get();
 
-  const matches = matchesSnapshot.docs.map((doc) => doc.data());
+  const matches = matchesSnapshot.docs
+    .map((doc) => doc.data())
+    .filter((match) => match.score && match.score !== "---")
+    .sort((a, b) => {
+      const dateA = new Date(`${a.matchDate} ${a.time}`);
+      const dateB = new Date(`${b.matchDate} ${b.time}`);
+
+      return dateA - dateB;
+    });
 
   const predictions = predictionsSnapshot.docs
     .map((doc) => doc.data())
