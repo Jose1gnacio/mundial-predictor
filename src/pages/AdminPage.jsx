@@ -279,6 +279,16 @@ function AdminPage({ matches, loadData }) {
     }
   };
 
+  const groupedDetails = auditResult?.details.reduce((acc, item) => {
+    if (!acc[item.round]) {
+      acc[item.round] = [];
+    }
+
+    acc[item.round].push(item);
+
+    return acc;
+  }, {});
+
   return (
     <>
       <h1 className="page-title">Panel de Administración</h1>
@@ -501,41 +511,58 @@ function AdminPage({ matches, loadData }) {
 
                   <br />
 
-                  {auditResult.details.map((item, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        marginBottom: "16px",
-                        paddingBottom: "16px",
-                        borderBottom: "1px solid rgba(255,255,255,0.15)",
-                      }}
-                    >
-                      <strong>{item.match}</strong>
-                      <br />
-                      Resultado: {item.result}
-                      {item.penalties && item.penalties !== "---" && (
-                        <>
+                  {Object.entries(groupedDetails).map(([round, matches]) => (
+                    <div key={round}>
+                      <h2
+                        style={{
+                          marginTop: "24px",
+                          marginBottom: "16px",
+                          color: "#ffd54f",
+                          borderBottom: "2px solid rgba(255,255,255,0.2)",
+                          paddingBottom: "6px",
+                        }}
+                      >
+                        🏆 {round}
+                      </h2>
+
+                      {matches.map((item, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            marginBottom: "16px",
+                            paddingBottom: "16px",
+                            borderBottom: "1px solid rgba(255,255,255,0.15)",
+                          }}
+                        >
+                          <strong>{item.match}</strong>
                           <br />
-                          Penales: {item.penalties}
-                        </>
-                      )}
-                      <br />
-                      Predicción:{" "}
-                      {item.prediction
-                        ? `${item.prediction.homeGoals}-${item.prediction.awayGoals}`
-                        : "Sin predicción"}
-                      {item.prediction?.homePenalties !== undefined &&
-                        item.prediction?.awayPenalties !== undefined && (
-                          <>
-                            <br />
-                            Penales predichos: {item.prediction.homePenalties}-
-                            {item.prediction.awayPenalties}
-                          </>
-                        )}
-                      <br />
-                      Estado: {item.status}
-                      <br />
-                      <strong>Puntos: {item.points}</strong>
+                          Resultado: {item.result}
+                          {item.penalties && item.penalties !== "---" && (
+                            <>
+                              <br />
+                              Penales: {item.penalties}
+                            </>
+                          )}
+                          <br />
+                          Predicción:{" "}
+                          {item.prediction
+                            ? `${item.prediction.homeGoals}-${item.prediction.awayGoals}`
+                            : "Sin predicción"}
+                          {item.prediction?.homePenalties !== undefined &&
+                            item.prediction?.awayPenalties !== undefined && (
+                              <>
+                                <br />
+                                Penales predichos:{" "}
+                                {item.prediction.homePenalties}-
+                                {item.prediction.awayPenalties}
+                              </>
+                            )}
+                          <br />
+                          Estado: {item.status}
+                          <br />
+                          <strong>Puntos: {item.points}</strong>
+                        </div>
+                      ))}
                     </div>
                   ))}
 
