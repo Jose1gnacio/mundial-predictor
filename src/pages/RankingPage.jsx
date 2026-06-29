@@ -76,42 +76,36 @@ function RankingPage({ ranking, specialPredictions, loading }) {
                     <span>❌ Fallados: {user.failed || 0}</span>
                   </div>
 
-                  {/*
                   {showSpecialPredictions && (
-                  */}
+                    <>
+                      <div className="ranking-special-divider"></div>
 
-                  <>
-                    <div className="ranking-special-divider"></div>
+                      <div className="ranking-special-title">
+                        🏆 Pronósticos Especiales
+                      </div>
 
-                    <div className="ranking-special-title">
-                      🏆 Pronósticos Especiales
-                    </div>
+                      <span>
+                        🥇 Finalista 1:{" "}
+                        {specialPrediction?.finalist1 || "Sin pronóstico"}
+                      </span>
 
-                    <span>
-                      🥇 Finalista 1:{" "}
-                      {specialPrediction?.finalist1 || "Sin pronóstico"}
-                    </span>
+                      <span>
+                        🥈 Finalista 2:{" "}
+                        {specialPrediction?.finalist2 || "Sin pronóstico"}
+                      </span>
 
-                    <span>
-                      🥈 Finalista 2:{" "}
-                      {specialPrediction?.finalist2 || "Sin pronóstico"}
-                    </span>
+                      <span>
+                        👑 Campeón:{" "}
+                        {specialPrediction?.champion || "Sin pronóstico"}
+                      </span>
 
-                    <span>
-                      👑 Campeón:{" "}
-                      {specialPrediction?.champion || "Sin pronóstico"}
-                    </span>
-
-                    {/*
+                      {/*
                     <span className="ranking-special-points">
                       ⭐ Puntos Especiales: {user.specialPoints || 0}
                     </span>
                     */}
-                  </>
-
-                  {/*
+                    </>
                   )}
-                  */}
                 </div>
               )}
             </div>
