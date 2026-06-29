@@ -18,6 +18,7 @@ import {
   getUserById,
   getRanking,
   getRankingByUser,
+  getAllSpecialPredictions,
   validateCacheVersion,
 } from "./services/firestoreApi";
 import RulesPage from "./pages/RulesPage";
@@ -47,6 +48,7 @@ function App() {
   });
 
   const [ranking, setRanking] = useState([]);
+  const [specialPredictions, setSpecialPredictions] = useState([]);
 
   const loadData = async () => {
     if (!user || userStatus !== "approved") return;
@@ -62,6 +64,10 @@ function App() {
     const rankingData = await getRanking();
 
     setRanking(rankingData);
+
+    const specialPredictionsData = await getAllSpecialPredictions();
+
+    setSpecialPredictions(specialPredictionsData);
 
     const rankingUser = await getRankingByUser(user.uid);
 
@@ -401,6 +407,7 @@ function App() {
                 <RankingPage
                   matches={matches}
                   ranking={ranking}
+                  specialPredictions={specialPredictions}
                   loading={loading}
                 />
               }

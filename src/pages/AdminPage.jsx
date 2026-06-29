@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import { auth } from "../firebase";
-import {
-  getApprovedUsers,
-  getUserPredictions,
-  getRankingByUser,
-} from "../services/firestoreApi";
-
-import { calculatePoints } from "../utils/scoringUtils";
+import { getApprovedUsers } from "../services/firestoreApi";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -76,49 +70,31 @@ function AdminPage({ matches, loadData }) {
     try {
       if (!selectedUser) {
         alert("Debes seleccionar un usuario");
-
         return;
       }
 
       setLoadingAudit(true);
 
-      const user = users.find((u) => u.uid === selectedUser);
+      const token = await auth.currentUser.getIdToken();
 
-      const predictions = await getUserPredictions(selectedUser);
-
-      const rankingData = await getRankingByUser(selectedUser);
-
-      let totalCalculated = 0;
-
-      const details = [];
-
-      matches.forEach((match) => {
-        if (!match.score || match.score === "---") {
-          return;
-        }
-
-        const prediction = predictions?.[match.id];
-
-        const points = calculatePoints(match.score, prediction);
-
-        totalCalculated += points;
-
-        details.push({
-          match: `${match.home} vs ${match.away}`,
-          result: match.score,
-          prediction: prediction
-            ? `${prediction.homeGoals}-${prediction.awayGoals}`
-            : "Sin predicción",
-          points,
-        });
+      const response = await fetch(`${BASE_URL}/admin/audit-user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId: selectedUser,
+        }),
       });
 
-      setAuditResult({
-        displayName: user.displayName,
-        calculatedPoints: totalCalculated,
-        rankingPoints: rankingData?.points || 0,
-        details,
-      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error realizando auditoría");
+      }
+
+      setAuditResult(data.audit);
     } catch (error) {
       console.error(error);
 
@@ -529,22 +505,88 @@ function AdminPage({ matches, loadData }) {
                     <div
                       key={index}
                       style={{
-                        marginBottom: "14px",
-                        paddingBottom: "14px",
+                        marginBottom: "16px",
+                        paddingBottom: "16px",
                         borderBottom: "1px solid rgba(255,255,255,0.15)",
                       }}
                     >
                       <strong>{item.match}</strong>
                       <br />
                       Resultado: {item.result}
+                      {item.penalties && item.penalties !== "---" && (
+                        <>
+                          <br />
+                          Penales: {item.penalties}
+                        </>
+                      )}
                       <br />
-                      Predicción: {item.prediction}
+                      Predicción:{" "}
+                      {item.prediction
+                        ? `${item.prediction.homeGoals}-${item.prediction.awayGoals}`
+                        : "Sin predicción"}
+                      {item.prediction?.homePenalties !== undefined &&
+                        item.prediction?.awayPenalties !== undefined && (
+                          <>
+                            <br />
+                            Penales predichos: {item.prediction.homePenalties}-
+                            {item.prediction.awayPenalties}
+                          </>
+                        )}
                       <br />
-                      Puntos: {item.points}
+                      Estado: {item.status}
+                      <br />
+                      <strong>Puntos: {item.points}</strong>
                     </div>
                   ))}
 
                   <br />
+                  <hr style={{ margin: "25px 0" }} />
+
+                  <h3>🏆 Pronóstico Especial</h3>
+
+                  <p>
+                    Finalista 1:{" "}
+                    {auditResult.specialPrediction?.finalist1 ||
+                      "Sin pronóstico"}
+                  </p>
+
+                  <p>
+                    Finalista 2:{" "}
+                    {auditResult.specialPrediction?.finalist2 ||
+                      "Sin pronóstico"}
+                  </p>
+
+                  <p>
+                    Campeón:{" "}
+                    {auditResult.specialPrediction?.champion ||
+                      "Sin pronóstico"}
+                  </p>
+
+                  {auditResult.specialResults && (
+                    <>
+                      <br />
+
+                      <p>
+                        <strong>Finalistas reales:</strong>{" "}
+                        {auditResult.specialResults.finalist1} vs{" "}
+                        {auditResult.specialResults.finalist2}
+                      </p>
+
+                      <p>
+                        <strong>Campeón real:</strong>{" "}
+                        {auditResult.specialResults.champion}
+                      </p>
+                    </>
+                  )}
+
+                  <hr style={{ margin: "25px 0" }} />
+
+                  <h3>
+                    Total por partidos:{" "}
+                    {auditResult.calculatedPoints - auditResult.specialPoints}
+                  </h3>
+
+                  <h3>Pronóstico especial: +{auditResult.specialPoints}</h3>
 
                   <h3>Total calculado: {auditResult.calculatedPoints}</h3>
 

@@ -97,6 +97,10 @@ export function clearPredictionsCache(userId) {
   localStorage.removeItem(`predictions_${userId}`);
 }
 
+export function clearSpecialPredictionsCache() {
+  localStorage.removeItem("specialPredictions");
+}
+
 export async function getMatchesFromFirestore() {
   try {
     const cachedMatches = getCache("matches");
@@ -330,5 +334,27 @@ export async function getRankingByUser(userId) {
     console.error("Error obteniendo ranking usuario:", error);
 
     return null;
+  }
+}
+
+export async function getAllSpecialPredictions() {
+  try {
+    const cached = getCache("specialPredictions");
+
+    if (cached) {
+      return cached;
+    }
+
+    const snapshot = await getDocs(collection(db, "specialPredictions"));
+
+    const predictions = snapshot.docs.map((doc) => doc.data());
+
+    setCache("specialPredictions", predictions);
+
+    return predictions;
+  } catch (error) {
+    console.error("Error obteniendo pronósticos especiales:", error);
+
+    return [];
   }
 }
