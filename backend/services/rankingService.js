@@ -1,4 +1,6 @@
 import { db } from "../firebase.js";
+import { updateSpecialPoints } from "./updateSpecialPointsService.js";
+import { updateSpecialResults } from "./specialResultService.js";
 
 function getWinner(homeGoals, awayGoals) {
   if (homeGoals > awayGoals) {
@@ -298,8 +300,9 @@ export async function rebuildRanking() {
     ranking.push({
       uid: user.uid,
       displayName: user.displayName,
+
       points,
-      specialPoints,
+
       exacts,
       winners,
       failed,
@@ -384,6 +387,12 @@ export async function updateRankingForMatch(matchId) {
 
   await batch.commit();
 
+  if (matchId === "final") {
+    await updateSpecialResults();
+
+    await updateSpecialPoints();
+  }
+
   const rankingSnapshot = await db.collection("ranking").get();
 
   const ranking = rankingSnapshot.docs.map((doc) => ({
@@ -404,4 +413,180 @@ export async function updateRankingForMatch(matchId) {
   });
 
   await rankBatch.commit();
+}
+
+export async function auditUser(userId) {
+  const matchesSnapshot = await db.collection("matches").get();
+
+  const predictionsSnapshot = await db.collection("predictions").get();
+
+  const rankingDoc = await db.collection("ranking").doc(userId).get();
+
+  const specialPredictionDoc = await db
+    .collection("specialPredictions")
+    .doc(userId)
+    .get();
+
+  const specialResultsDoc = await db
+    .collection("specialResults")
+    .doc("worldCup2026")
+    .get();
+
+  const matches = matchesSnapshot.docs.map((doc) => doc.data());
+
+  const predictions = predictionsSnapshot.docs
+    .map((doc) => doc.data())
+    .filter((prediction) => prediction.userId === userId);
+
+  const ranking = rankingDoc.exists ? rankingDoc.data() : null;
+
+  const specialPrediction = specialPredictionDoc.exists
+    ? specialPredictionDoc.data()
+    : null;
+
+  const specialResults = specialResultsDoc.exists
+    ? specialResultsDoc.data()
+    : null;
+
+  let totalPoints = 0;
+
+  let exacts = 0;
+
+  let winners = 0;
+
+  let failed = 0;
+
+  let missing = 0;
+
+  let specialPoints = 0;
+
+  const details = [];
+
+  for (const match of matches) {
+    const prediction = predictions.find((p) => p.matchId === match.id);
+
+    const parsedScore = parseScore(match.score);
+
+    if (!prediction) {
+      if (parsedScore) {
+        missing++;
+      }
+
+      details.push({
+        matchId: match.id,
+        round: match.round,
+        match: `${match.home} vs ${match.away}`,
+        result: match.score,
+        penalties: match.penalties,
+        prediction: null,
+        points: 0,
+        status: "Sin predicción",
+      });
+
+      continue;
+    }
+
+    if (!parsedScore) {
+      details.push({
+        matchId: match.id,
+        round: match.round,
+        match: `${match.home} vs ${match.away}`,
+        result: "---",
+        penalties: "---",
+        prediction,
+        points: 0,
+        status: "Pendiente",
+      });
+
+      continue;
+    }
+
+    const matchResult = calculatePoints(match, prediction);
+
+    totalPoints += matchResult.points;
+
+    if (matchResult.exact) {
+      exacts++;
+    } else if (matchResult.winner) {
+      winners++;
+    } else {
+      failed++;
+    }
+
+    details.push({
+      matchId: match.id,
+      round: match.round,
+      match: `${match.home} vs ${match.away}`,
+      result: match.score,
+      penalties: match.penalties,
+      prediction,
+      points: matchResult.points,
+      exact: matchResult.exact,
+      winner: matchResult.winner,
+      status: matchResult.exact
+        ? "Exacto"
+        : matchResult.winner
+          ? "Ganador"
+          : "Fallado",
+    });
+  }
+  // ==========================================
+  // PRONÓSTICOS ESPECIALES
+  // ==========================================
+
+  if (specialPrediction && specialResults) {
+    const predictedFinalists = [
+      specialPrediction.finalist1,
+      specialPrediction.finalist2,
+    ];
+
+    const finalist1Correct = predictedFinalists.includes(
+      specialResults.finalist1,
+    );
+
+    const finalist2Correct = predictedFinalists.includes(
+      specialResults.finalist2,
+    );
+
+    const championCorrect =
+      specialPrediction.champion === specialResults.champion;
+
+    if (finalist1Correct) {
+      specialPoints += 5;
+    }
+
+    if (finalist2Correct) {
+      specialPoints += 5;
+    }
+
+    if (championCorrect) {
+      specialPoints += 10;
+    }
+
+    totalPoints += specialPoints;
+  }
+
+  return {
+    ranking,
+
+    calculatedPoints: totalPoints,
+
+    rankingPoints: ranking?.points || 0,
+
+    exacts,
+
+    winners,
+
+    failed,
+
+    missing,
+
+    specialPoints,
+
+    specialPrediction,
+
+    specialResults,
+
+    details,
+  };
 }

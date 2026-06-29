@@ -6,6 +6,7 @@ import { admin, db } from "./firebase.js";
 import {
   rebuildRanking,
   updateRankingForMatch,
+  auditUser,
 } from "./services/rankingService.js";
 import { verifyAdmin } from "./middleware/verifyAdmin.js";
 import { verifyUser } from "./middleware/verifyUser.js";
@@ -290,6 +291,37 @@ app.post("/admin/populate-qualified", verifyAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Error actualizando clasificados",
+    });
+  }
+});
+
+// ===========================================
+// ADMIN - AUDITORÍA DE USUARIO
+// ===========================================
+
+app.post("/admin/audit-user", verifyAdmin, async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: "Falta userId",
+      });
+    }
+
+    const audit = await auditUser(userId);
+
+    res.json({
+      success: true,
+      audit,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: "Error realizando auditoría",
     });
   }
 });

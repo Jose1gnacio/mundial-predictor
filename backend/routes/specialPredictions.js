@@ -100,4 +100,28 @@ router.get("/special-predictions", verifyUser, async (req, res) => {
   }
 });
 
+// ===========================================
+// OBTENER TODOS LOS PRONÓSTICOS ESPECIALES
+// ===========================================
+
+router.get("/special-predictions/all", verifyUser, async (req, res) => {
+  try {
+    const snapshot = await db.collection("specialPredictions").get();
+
+    const predictions = snapshot.docs.map((doc) => doc.data());
+
+    res.json({
+      success: true,
+      predictions,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: "Error obteniendo pronósticos especiales",
+    });
+  }
+});
+
 export default router;
