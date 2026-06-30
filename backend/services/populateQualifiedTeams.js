@@ -1,6 +1,7 @@
 import { db } from "../firebase.js";
 import { buildGroupStandings } from "../../shared/groupStandingsUtils.js";
 import { worldCupGroups } from "../../shared/worldCupGroups.js";
+import { advanceWinner } from "./knockoutService.js";
 
 function isGroupFinished(matches, groupTeams) {
   const playedMatches = matches.filter((match) => {
@@ -26,6 +27,10 @@ export async function populateQualifiedTeams() {
   Object.entries(worldCupGroups).forEach(([groupName, teams]) => {
     finishedGroups[groupName] = isGroupFinished(matches, teams);
   });
+
+  // ==========================================
+  // LLENAR LOS 16AVOS DESDE LOS GRUPOS
+  // ==========================================
 
   const knockoutMatches = matches.filter((match) => match.round === "16AVOS");
 
@@ -66,4 +71,29 @@ export async function populateQualifiedTeams() {
   }
 
   await batch.commit();
+
+  // ==========================================
+  // RECONSTRUIR TODO EL CUADRO ELIMINATORIO
+  // ==========================================
+
+  const rounds = [
+    "16AVOS",
+    "8AVOS",
+    "4TOS",
+    "SEMIFINAL",
+    "TERCER LUGAR",
+    "FINAL",
+  ];
+
+  for (const round of rounds) {
+    const roundMatches = matches
+      .filter((match) => match.round === round)
+      .sort((a, b) => a.matchDate.localeCompare(b.matchDate));
+
+    for (const match of roundMatches) {
+      if (match.score && match.score !== "---") {
+        await advanceWinner(match.id);
+      }
+    }
+  }
 }

@@ -222,26 +222,16 @@ const finalPhaseMatches = [
     allowPenalties: true,
     time: "03.07. 21:30",
   },
-  {
-    away: "Ganador 16AVOS 5",
-    awaySource: "winner_dieciseisavos_5",
-    home: "Ganador 16AVOS 2",
-    homeSource: "winner_dieciseisavos_2",
-    id: "octavos_1",
-    matchDate: "2026-07-04",
-    round: "8AVOS",
-    score: "---",
-    penalties: "---",
-    allowPenalties: true,
-    time: "04.07. 17:00",
-  },
+  // =========================
+  // OCTAVOS DE FINAL
+  // =========================
 
   {
-    away: "Ganador 16AVOS 3",
-    awaySource: "winner_dieciseisavos_3",
-    home: "Ganador 16AVOS 1",
-    homeSource: "winner_dieciseisavos_1",
-    id: "octavos_2",
+    home: "Ganador 16AVOS 3",
+    homeSource: "winner_dieciseisavos_3",
+    away: "Ganador 16AVOS 4",
+    awaySource: "winner_dieciseisavos_4",
+    id: "octavos_1",
     matchDate: "2026-07-04",
     round: "8AVOS",
     score: "---",
@@ -251,39 +241,25 @@ const finalPhaseMatches = [
   },
 
   {
-    away: "Ganador 16AVOS 12",
-    awaySource: "winner_dieciseisavos_12",
-    home: "Ganador 16AVOS 11",
-    homeSource: "winner_dieciseisavos_11",
-    id: "octavos_3",
-    matchDate: "2026-07-06",
+    home: "Ganador 16AVOS 1",
+    homeSource: "winner_dieciseisavos_1",
+    away: "Ganador 16AVOS 2",
+    awaySource: "winner_dieciseisavos_2",
+    id: "octavos_2",
+    matchDate: "2026-07-04",
     round: "8AVOS",
     score: "---",
     penalties: "---",
     allowPenalties: true,
-    time: "06.07. 15:00",
+    time: "04.07. 17:00",
   },
 
   {
-    away: "Ganador 16AVOS 10",
-    awaySource: "winner_dieciseisavos_10",
     home: "Ganador 16AVOS 9",
     homeSource: "winner_dieciseisavos_9",
-    id: "octavos_4",
-    matchDate: "2026-07-06",
-    round: "8AVOS",
-    score: "---",
-    penalties: "---",
-    allowPenalties: true,
-    time: "06.07. 20:00",
-  },
-
-  {
-    away: "Ganador 16AVOS 6",
-    awaySource: "winner_dieciseisavos_6",
-    home: "Ganador 16AVOS 4",
-    homeSource: "winner_dieciseisavos_4",
-    id: "octavos_5",
+    away: "Ganador 16AVOS 10",
+    awaySource: "winner_dieciseisavos_10",
+    id: "octavos_3",
     matchDate: "2026-07-05",
     round: "8AVOS",
     score: "---",
@@ -293,11 +269,11 @@ const finalPhaseMatches = [
   },
 
   {
-    away: "Ganador 16AVOS 8",
-    awaySource: "winner_dieciseisavos_8",
-    home: "Ganador 16AVOS 7",
-    homeSource: "winner_dieciseisavos_7",
-    id: "octavos_6",
+    home: "Ganador 16AVOS 11",
+    homeSource: "winner_dieciseisavos_11",
+    away: "Ganador 16AVOS 12",
+    awaySource: "winner_dieciseisavos_12",
+    id: "octavos_4",
     matchDate: "2026-07-05",
     round: "8AVOS",
     score: "---",
@@ -307,10 +283,38 @@ const finalPhaseMatches = [
   },
 
   {
-    away: "Ganador 16AVOS 16",
-    awaySource: "winner_dieciseisavos_16",
-    home: "Ganador 16AVOS 14",
-    homeSource: "winner_dieciseisavos_14",
+    home: "Ganador 16AVOS 5",
+    homeSource: "winner_dieciseisavos_5",
+    away: "Ganador 16AVOS 6",
+    awaySource: "winner_dieciseisavos_6",
+    id: "octavos_5",
+    matchDate: "2026-07-06",
+    round: "8AVOS",
+    score: "---",
+    penalties: "---",
+    allowPenalties: true,
+    time: "06.07. 15:00",
+  },
+
+  {
+    home: "Ganador 16AVOS 7",
+    homeSource: "winner_dieciseisavos_7",
+    away: "Ganador 16AVOS 8",
+    awaySource: "winner_dieciseisavos_8",
+    id: "octavos_6",
+    matchDate: "2026-07-06",
+    round: "8AVOS",
+    score: "---",
+    penalties: "---",
+    allowPenalties: true,
+    time: "06.07. 20:00",
+  },
+
+  {
+    home: "Ganador 16AVOS 13",
+    homeSource: "winner_dieciseisavos_13",
+    away: "Ganador 16AVOS 14",
+    awaySource: "winner_dieciseisavos_14",
     id: "octavos_7",
     matchDate: "2026-07-07",
     round: "8AVOS",
@@ -321,10 +325,10 @@ const finalPhaseMatches = [
   },
 
   {
-    away: "Ganador 16AVOS 15",
-    awaySource: "winner_dieciseisavos_15",
-    home: "Ganador 16AVOS 13",
-    homeSource: "winner_dieciseisavos_13",
+    home: "Ganador 16AVOS 15",
+    homeSource: "winner_dieciseisavos_15",
+    away: "Ganador 16AVOS 16",
+    awaySource: "winner_dieciseisavos_16",
     id: "octavos_8",
     matchDate: "2026-07-07",
     round: "8AVOS",
@@ -333,11 +337,16 @@ const finalPhaseMatches = [
     allowPenalties: true,
     time: "07.07. 16:00",
   },
+
+  // =========================
+  // CUARTOS
+  // =========================
+
   {
-    away: "Ganador 8AVOS 2",
-    awaySource: "winner_octavos_2",
     home: "Ganador 8AVOS 1",
     homeSource: "winner_octavos_1",
+    away: "Ganador 8AVOS 2",
+    awaySource: "winner_octavos_2",
     id: "cuartos_1",
     matchDate: "2026-07-09",
     round: "4TOS",
@@ -348,10 +357,10 @@ const finalPhaseMatches = [
   },
 
   {
-    away: "Ganador 8AVOS 4",
-    awaySource: "winner_octavos_4",
-    home: "Ganador 8AVOS 3",
-    homeSource: "winner_octavos_3",
+    home: "Ganador 8AVOS 5",
+    homeSource: "winner_octavos_5",
+    away: "Ganador 8AVOS 6",
+    awaySource: "winner_octavos_6",
     id: "cuartos_2",
     matchDate: "2026-07-10",
     round: "4TOS",
@@ -362,10 +371,10 @@ const finalPhaseMatches = [
   },
 
   {
-    away: "Ganador 8AVOS 6",
-    awaySource: "winner_octavos_6",
-    home: "Ganador 8AVOS 5",
-    homeSource: "winner_octavos_5",
+    home: "Ganador 8AVOS 3",
+    homeSource: "winner_octavos_3",
+    away: "Ganador 8AVOS 4",
+    awaySource: "winner_octavos_4",
     id: "cuartos_3",
     matchDate: "2026-07-11",
     round: "4TOS",
@@ -376,10 +385,10 @@ const finalPhaseMatches = [
   },
 
   {
-    away: "Ganador 8AVOS 8",
-    awaySource: "winner_octavos_8",
     home: "Ganador 8AVOS 7",
     homeSource: "winner_octavos_7",
+    away: "Ganador 8AVOS 8",
+    awaySource: "winner_octavos_8",
     id: "cuartos_4",
     matchDate: "2026-07-11",
     round: "4TOS",
@@ -389,11 +398,15 @@ const finalPhaseMatches = [
     time: "11.07. 21:00",
   },
 
+  // =========================
+  // SEMIFINALES
+  // =========================
+
   {
-    away: "Ganador 4TOS 2",
-    awaySource: "winner_cuartos_2",
     home: "Ganador 4TOS 1",
     homeSource: "winner_cuartos_1",
+    away: "Ganador 4TOS 2",
+    awaySource: "winner_cuartos_2",
     id: "semifinal_1",
     matchDate: "2026-07-14",
     round: "SEMIFINAL",
@@ -404,10 +417,10 @@ const finalPhaseMatches = [
   },
 
   {
-    away: "Ganador 4TOS 4",
-    awaySource: "winner_cuartos_4",
     home: "Ganador 4TOS 3",
     homeSource: "winner_cuartos_3",
+    away: "Ganador 4TOS 4",
+    awaySource: "winner_cuartos_4",
     id: "semifinal_2",
     matchDate: "2026-07-15",
     round: "SEMIFINAL",
@@ -416,11 +429,16 @@ const finalPhaseMatches = [
     allowPenalties: true,
     time: "15.07. 15:00",
   },
+
+  // =========================
+  // TERCER LUGAR
+  // =========================
+
   {
-    away: "Perdedor SEMIFINAL 2",
-    awaySource: "loser_semifinal_2",
     home: "Perdedor SEMIFINAL 1",
     homeSource: "loser_semifinal_1",
+    away: "Perdedor SEMIFINAL 2",
+    awaySource: "loser_semifinal_2",
     id: "tercer_lugar",
     matchDate: "2026-07-18",
     round: "TERCER LUGAR",
@@ -430,11 +448,15 @@ const finalPhaseMatches = [
     time: "18.07. 17:00",
   },
 
+  // =========================
+  // FINAL
+  // =========================
+
   {
-    away: "Ganador SEMIFINAL 2",
-    awaySource: "winner_semifinal_2",
     home: "Ganador SEMIFINAL 1",
     homeSource: "winner_semifinal_1",
+    away: "Ganador SEMIFINAL 2",
+    awaySource: "winner_semifinal_2",
     id: "final",
     matchDate: "2026-07-19",
     round: "FINAL",
